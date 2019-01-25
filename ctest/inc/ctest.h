@@ -65,6 +65,7 @@ static size_t __success_tests;
         } \
     } while (0)
 
+
 /*
     Expect that value return by func will equal val. Otherwise increment flags and print communcation.
     Macro also check types. In another case will happen compile-time error.
@@ -145,6 +146,7 @@ static size_t __success_tests;
         } \
     } while (0) 
 
+
 /*
     Macro takes function and run it. If happen any failed, increment flags.
 
@@ -171,6 +173,7 @@ static size_t __success_tests;
         } \
     } while (0)
 
+
 /*
     Macro memset flags to zero.
 */
@@ -181,6 +184,7 @@ static size_t __success_tests;
         (void)printf(COLOR_BLUE "---------------> %s <---------------\n" COLOR_DEFAULT, msg); \
         __success_tests = __failed_tests = 0; \
     } while (0)
+
 
 /*
     Macro print proper message after run tests.

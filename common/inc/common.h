@@ -13,6 +13,7 @@
 
 #include <stdio.h> 
 #include <string.h>
+#include <stdint.h>
 
 
 /* 
@@ -55,6 +56,14 @@
     } while (0) \
 
 
+/* Printing error message with ending current process */
+#define VERROR(msg) \
+    do { \
+        (void)printf("%s.\t\t FILE=%s LINE=%d\n", msg, __FILENAME__, __LINE__); \
+        return; \
+    } while (0) \
+
+
 /* Free and NULL */
 #define FREE(ptr) \
     do { \
@@ -67,14 +76,36 @@
 #define ARRAY_SIZE(array) sizeof(array) / sizeof(array[0])
 
 
-/* Swap a and b if type is the same */
-#define SWAP(a, b) \
+/* Assign dst and src if type is the same */
+#define __ASSIGN__(dst, src, size) \
     do { \
-        check_types(a, b); \
-        typeof(a) __temp = (a); \
-        (a) = (b); \
-        (b) = __temp; \
+        _Pragma("GCC diagnostic push"); \
+        _Pragma("GCC diagnostic ignored \"-Wstrict-aliasing\""); \
+        check_types(dst, src); \
+        switch (size) \
+        { \
+            case 1: *(uint8_t *)&dst = *(uint8_t *)&src; break; \
+            case 2: *(uint16_t *)&dst = *(uint16_t *)&src; break; \
+            case 4: *(uint32_t *)&dst = *(uint32_t *)&src; break; \
+            case 8: *(uint64_t *)&dst = *(uint64_t *)&src; break; \
+            default: (void)memcpy((void *)&dst, (void *)&src, (size_t)size); \
+        } \
+        _Pragma("GCC diagnostic pop"); \
     } while (0);
 
+
+/* Swap dst and src if type is the same */
+#define SWAP(dst, src, size) \
+    do { \
+        check_types(dst, src); \
+        uint8_t __buffer__[size]; \
+        __ASSIGN__(__buffer__[0], dst, size); \
+        __ASSIGN__(dst, src, size); \
+        __ASSIGN__(src, __buffer__[0], size); \
+    } while (0);
+
+
+/* use this macro instead of inline */
+#define ___inline___ inline __attribute__(( always_inline ))
 
 #endif /* _COMMON_H_ */
