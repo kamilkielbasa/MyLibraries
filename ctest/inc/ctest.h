@@ -162,7 +162,7 @@ static size_t __success_tests;
 #define TEST(func) \
     do { \
         __failed = 0; \
-        func; \
+        (void)func; \
         if (__failed > 0) \
         { \
             ++__failed_tests; \

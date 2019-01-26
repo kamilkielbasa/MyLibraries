@@ -5,13 +5,30 @@
 
 #define RATIO ((size_t)2)
 
-/************************* STATIC FUNCTIONS *************************/
+/*
+    Calculate offset.
 
+    PARAMS:
+    @IN src - pointer to the source.
+    @IN size_of - offset to move.
+
+    RETURN:
+    %Pointer with offset.
+*/
 static __inline__ void *__calc_offset(const void * const src, const size_t offset)
 {
 	return ((char *)src + offset);
 }
 
+/*
+    Realloc array in dynamic array when inserted new element.
+
+    PARAMS:
+    @IN src - pointer to the dynamic array.
+
+    RETURN:
+    %This is void function.
+*/
 static void __darray_resize_insert(Darray *darray)
 {
 	if (darray->size == 0)
@@ -35,12 +52,20 @@ static void __darray_resize_insert(Darray *darray)
 	}
 }
 
+/*
+    Realloc array in dynamic array when deleted element.
+
+    PARAMS:
+    @IN src - pointer to the dynamic array.
+
+    RETURN:
+    %This is void function.
+*/
 static void __darray_resize_delete(Darray *darray)
 {
 	if (darray->num_entries == 1)
 	{
 		darray->size = 0;
-		darray->num_entries = 0;
 		FREE(darray->array);
 		return;
 	}
@@ -56,6 +81,17 @@ static void __darray_resize_delete(Darray *darray)
 	}
 }
 
+/*
+    Insert new element to the sorted dynamic array.
+
+    PARAMS:
+    @IN src - pointer to the dynamic array.
+	@IN entry - pointer to entry.
+
+    RETURN:
+    %0 if success.
+	%negative value if failure.
+*/
 static int __darray_sorted_insert(Darray * restrict darray, const void * restrict entry)
 {
 	if (entry == NULL)
@@ -65,13 +101,13 @@ static int __darray_sorted_insert(Darray * restrict darray, const void * restric
 
 	size_t pos = 0;
 
-	for (size_t index = 0; index < (darray->num_entries + 1); ++index)
+	for (size_t index = 0; index < darray->num_entries; ++index)
 	{
-		const void *tmp = __calc_offset(darray->array, index);
+		void *curr = __calc_offset(darray->array, (index * darray->size_of));
 
-		if (darray->cmp_f(entry, tmp) > 0)
+		if (darray->cmp_f(entry, curr) >= 0)
 		{
-			pos = index;
+			pos = index + 1;
 		}
 	} 
 
@@ -87,6 +123,17 @@ static int __darray_sorted_insert(Darray * restrict darray, const void * restric
     return 0;
 }
 
+/*
+    Insert new element to the unsorted dynamic array.
+
+    PARAMS:
+    @IN src - pointer to the dynamic array.
+	@IN entry - pointer to entry.
+
+    RETURN:
+    %0 if success.
+	%negative value if failure.
+*/
 static int __darray_unsorted_insert(Darray * restrict darray, const void * restrict entry)
 {
 	if (entry == NULL)
@@ -100,44 +147,6 @@ static int __darray_unsorted_insert(Darray * restrict darray, const void * restr
 
     return 0;
 }
-
-static int __darray_sorted_delete(Darray * restrict darray, void * restrict val_out)
-{
-	if (darray->array == NULL)
-		ERROR("darray->array == NULL\n", -1);
-
-	if (val_out != NULL)
-	{
-		const void *dst = __calc_offset(darray->array, ((darray->num_entries - 1) * darray->size_of));
-		__ASSIGN__(*(char *)val_out, *(char *)dst, darray->size_of);
-	}
-
-	__darray_resize_delete(darray);
-     
-	--darray->num_entries; 
-
-	return 0;
-}
-
-static int __darray_unsorted_delete(Darray * restrict darray, void * restrict val_out)
-{
-	if (darray->array == NULL)
-		ERROR("darray->array == NULL\n", -1);     
-
-	if (val_out != NULL)
-	{
-		const void *dst = __calc_offset(darray->array, ((darray->num_entries - 1) * darray->size_of));
-		__ASSIGN__(*(char *)val_out, *(char *)dst, darray->size_of);
-	}
-     
-	__darray_resize_delete(darray);
-
-	--darray->num_entries; 
-
-    return 0;
-}
-
-/************************* PUBLIC FUNCTIONS *************************/
 
 Darray *darray_create(const DARRAY_TYPE type, const size_t size_of, const size_t size, compare_func cmp_f)
 {
@@ -193,8 +202,45 @@ int darray_insert(Darray * restrict darray, const void * restrict entry)
 
 int darray_delete(Darray * restrict darray, void * restrict val_out)
 {
+	if (darray->array == NULL)
+		ERROR("darray->array == NULL\n", -1);
+
+	if (val_out != NULL)
+	{
+		const void *dst = __calc_offset(darray->array, ((darray->num_entries - 1) * darray->size_of));
+		__ASSIGN__(*(char *)val_out, *(char *)dst, darray->size_of);
+	}
+
+	__darray_resize_delete(darray);
+	--darray->num_entries; 
+
+	return 0;
+}
+
+int darray_get_data(const Darray * const restrict darray, void * restrict val_out, const size_t pos)
+{
 	if (darray == NULL)
 		ERROR("darray == NULL\n", -1);
 
-	return (darray->type == DARRAY_SORTED) ? __darray_sorted_delete(darray, val_out) : __darray_unsorted_delete(darray, val_out);
+	if (darray->array == NULL)
+		ERROR("darray->array == NULL\n", -1);
+
+	if (val_out == NULL)
+		ERROR("val_out == NULL\n", -1);
+
+	if (pos > (darray->num_entries - 1))
+		ERROR("pos > (darray->num_entries - 1)\n", -1);
+
+	void *src = __calc_offset(darray->array, (pos * darray->size_of));
+	__ASSIGN__(*(char *)val_out, *(char *)src, darray->size_of);
+	
+	return 0;
+}
+
+ssize_t darray_get_num_entries(const Darray * const darray)
+{
+	if (darray == NULL)
+		ERROR("darray == NULL\n", -1);
+
+	return (ssize_t)darray->num_entries;
 }

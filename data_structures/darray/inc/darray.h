@@ -33,15 +33,14 @@ typedef struct Darray_iterator
 
 typedef struct Darray 
 {
-	void *array;			/* main array */
+    void *array;	    /* main array */
     compare_func cmp_f;     /* pointer to compare function */
 
     DARRAY_TYPE type;       /* dynamic array type (sorted / unsorted) */
-	size_t size_of;			/* size of element */
-	size_t num_entries; 	/* number of entries in array */
-	size_t size;			/* current allocated size of array */
+    size_t size_of;	    /* size of element */
+    size_t num_entries;     /* number of entries in array */
+    size_t size;	    /* current allocated size of array */
 } Darray;
-
 
 /*
     Create new instance of dynamic array.
