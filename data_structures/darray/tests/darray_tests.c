@@ -704,6 +704,8 @@ static void test_darray_search_min(void)
 	T_EXPECT(darray_search_min(darray, &expt), index);
 	T_CHECK(expt.a == arr[index].a);
 	T_CHECK(expt.b == arr[index].b);
+
+	darray_destroy(darray);
 }
 
 static void test_darray_search_max(void)
@@ -735,6 +737,56 @@ static void test_darray_search_max(void)
 	T_EXPECT(darray_search_max(darray, &expt), index);
 	T_CHECK(expt.a == arr[index].a);
 	T_CHECK(expt.b == arr[index].b);
+
+	darray_destroy(darray);
+}
+
+static void test_darray_sort(void)
+{
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare);
+	T_ERROR(darray == NULL);
+
+	const S arr[] = 
+	{
+		{ 0, 36 },
+		{ 4, 40 },
+		{ 1, 37 },
+		{ 5, 41 },
+		{ 2, 38 },
+		{ 7, 43 },
+		{ 6, 42 },
+		{ 3, 39 },
+	};
+
+	const S expt_arr[] = 
+	{
+		{ 0, 36 },
+		{ 1, 37 },
+		{ 2, 38 },
+		{ 3, 39 },
+		{ 4, 40 },
+		{ 5, 41 },
+		{ 6, 42 },
+		{ 7, 43 },
+	};
+
+	for (size_t index = 0; index < ARRAY_SIZE(arr); ++index)
+	{
+		T_EXPECT(darray_insert(darray, &arr[index]), 0);
+	}
+
+	T_EXPECT(darray_sort(darray), 0);
+
+	for (size_t index = 0; index < darray->num_entries; ++index)
+	{
+		S expt = {0};
+		T_EXPECT(darray_get_data(darray, &expt, index), 0);
+
+		T_CHECK(expt_arr[index].a == expt.a);
+		T_CHECK(expt_arr[index].b == expt.b);
+	}
+
+	darray_destroy(darray);
 }
 
 int main(void)
@@ -750,6 +802,7 @@ int main(void)
 	TEST(test_darray_search_last());
 	TEST(test_darray_search_min());
 	TEST(test_darray_search_max());
+	TEST(test_darray_sort());
 	TEST_SUMMARY();
 
 	return 0;

@@ -1,7 +1,7 @@
 #include <darray.h>
 #include <common.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdlib.h> /* malloc, free, qsort */
+#include <string.h> /* memcpy, memmove */
 
 #define RATIO ((size_t)2)
 
@@ -438,10 +438,38 @@ ssize_t darray_search_max(const Darray * const restrict darray, void * restrict 
 	return index;
 }
 
+int darray_sort(Darray *darray)
+{
+	if (darray == NULL || darray->array == NULL)
+		ERROR("darray == NULL || darray->array == NULL\n", -1);
+
+	if (darray->type == DARRAY_SORTED)
+		ERROR("darray->type == DARRAY_SORTED\n", -1);
+
+	qsort(darray->array, darray->num_entries, darray->size_of, darray->cmp_f);
+	return 0;
+}
+
+ssize_t darray_get_size(const Darray * const darray)
+{
+	if (darray == NULL)
+		ERROR("darray == NULL\n", -1);
+
+	return (ssize_t)darray->size;
+}
+
 ssize_t darray_get_num_entries(const Darray * const darray)
 {
 	if (darray == NULL)
 		ERROR("darray == NULL\n", -1);
 
 	return (ssize_t)darray->num_entries;
+}
+
+void *darray_get_array(const Darray * const darray)
+{
+	if (darray == NULL || darray->array == NULL)
+		ERROR("darray == NULL || darray->array == NULL\n", NULL);
+
+	return darray->array;
 }

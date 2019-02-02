@@ -10,7 +10,6 @@
     LICENCE: GPL 3.0
 */
 
-#include <stdbool.h> /* bool */
 #include <stddef.h> /* size_t */
 #include <sys/types.h> /* ssize_t */
 
@@ -203,29 +202,6 @@ ssize_t darray_search_max(const Darray * const restrict darray, void * restrict 
 int darray_sort(Darray *darray);
 
 /*
-    Reverse sort darray.
-
-    PARAMS:
-    @IN darray - pointer to dynamic array.
-
-    RETURN:
-    %0 if success.
-    %negative value if failure.
-*/
-int darray_reverse_sort(Darray *darray);
-
-/*
-    Check type of the darray.
-
-    PARAMS:
-    @IN darray - pointer to dynamic array.
-
-    RETURN:
-    %type of darray.
-*/
-DARRAY_TYPE darray_is_sorted(const Darray * const darray);
-
-/*
     Get size of array.
 
     PARAMS:
@@ -248,18 +224,6 @@ ssize_t darray_get_size(const Darray * const darray);
     %-1 if failure.
 */
 ssize_t darray_get_num_entries(const Darray * const darray);
-
-/*
-    Get type of darray.
-
-    PARAMS:
-    @IN darray - pointer to dynamic array.
-
-    RETURN:
-    %num of entries if success.
-    %-1 if failure.
-*/
-ssize_t darray_get_data_type(const Darray * const darray);
 
 /*
     Get pointer to darray array.
