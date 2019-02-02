@@ -675,6 +675,68 @@ static void test_darray_search_last(void)
 	darray_destroy(darray);
 }
 
+static void test_darray_search_min(void)
+{
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare);
+	T_ERROR(darray == NULL);
+
+	const S arr[] = 
+	{
+		{ 4, 40 },
+		{ 1, 37 },
+		{ 5, 41 },
+		{ 2, 38 },
+		{ 7, 43 },
+		{ 6, 42 },
+		{ 0, 36 },
+		{ 3, 39 },
+	};
+
+	for (size_t index = 0; index < ARRAY_SIZE(arr); ++index)
+	{
+		T_EXPECT(darray_insert(darray, &arr[index]), 0);
+	}
+
+	ssize_t index = 0;
+	S expt = {0};
+
+	index = 6;
+	T_EXPECT(darray_search_min(darray, &expt), index);
+	T_CHECK(expt.a == arr[index].a);
+	T_CHECK(expt.b == arr[index].b);
+}
+
+static void test_darray_search_max(void)
+{
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare);
+	T_ERROR(darray == NULL);
+
+	const S arr[] = 
+	{
+		{ 0, 36 },
+		{ 4, 40 },
+		{ 1, 37 },
+		{ 5, 41 },
+		{ 2, 38 },
+		{ 7, 43 },
+		{ 6, 42 },
+		{ 3, 39 },
+	};
+
+	for (size_t index = 0; index < ARRAY_SIZE(arr); ++index)
+	{
+		T_EXPECT(darray_insert(darray, &arr[index]), 0);
+	}
+
+	ssize_t index = 0;
+	S expt = {0};
+
+	index = 5;
+	T_EXPECT(darray_search_max(darray, &expt), index);
+	T_CHECK(expt.a == arr[index].a);
+	T_CHECK(expt.b == arr[index].b);
+}
+
 int main(void)
 {
 	TEST_INIT("TESTING DYNAMIC ARRAY");
@@ -686,6 +748,8 @@ int main(void)
 	TEST(test_delete_pos_unsorted_darray());
 	TEST(test_darray_search_first());
 	TEST(test_darray_search_last());
+	TEST(test_darray_search_min());
+	TEST(test_darray_search_max());
 	TEST_SUMMARY();
 
 	return 0;

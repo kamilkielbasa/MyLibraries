@@ -378,6 +378,66 @@ ssize_t darray_search_last(const Darray * const restrict darray, const void * co
 	return index;
 }
 
+ssize_t darray_search_min(const Darray * const restrict darray, void * restrict val_out)
+{
+	if (darray == NULL || darray->array == NULL)
+		ERROR("darray == NULL || darray->array == NULL\n", -1);
+
+	const size_t size_of = darray->size_of;
+	const size_t length = darray->num_entries * size_of;
+
+	ssize_t index = -1;
+	void *arr = darray->array;
+	void *curr = arr;
+
+	for (size_t offset = size_of; offset < length; offset += size_of)
+	{
+		if (darray->cmp_f(__calc_offset(arr, offset), curr) < 0)
+		{
+			curr = __calc_offset(arr, offset);
+			index = (ssize_t)(offset / size_of);
+		}
+	}
+
+	if (val_out != NULL && index != -1)
+	{
+		void *src = __calc_offset(darray->array, (size_t)index * darray->size_of);
+		__ASSIGN__(*(char *)val_out, *(char *)src, darray->size_of);
+	}
+
+	return index;
+}
+
+ssize_t darray_search_max(const Darray * const restrict darray, void * restrict val_out)
+{
+	if (darray == NULL || darray->array == NULL)
+		ERROR("darray == NULL || darray->array == NULL\n", -1);
+
+	const size_t size_of = darray->size_of;
+	const size_t length = darray->num_entries * size_of;
+
+	ssize_t index = -1;
+	void *arr = darray->array;
+	void *curr = arr;
+
+	for (size_t offset = size_of; offset < length; offset += size_of)
+	{
+		if (darray->cmp_f(__calc_offset(arr, offset), curr) > 0)
+		{
+			curr = __calc_offset(arr, offset);
+			index = (ssize_t)(offset / size_of);
+		}
+	}
+
+	if (val_out != NULL && index != -1)
+	{
+		void *src = __calc_offset(darray->array, (size_t)index * darray->size_of);
+		__ASSIGN__(*(char *)val_out, *(char *)src, darray->size_of);
+	}
+
+	return index;
+}
+
 ssize_t darray_get_num_entries(const Darray * const darray)
 {
 	if (darray == NULL)
