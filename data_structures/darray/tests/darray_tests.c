@@ -565,6 +565,116 @@ static void test_delete_pos_unsorted_darray(void)
 	darray_destroy(darray);
 }
 
+static void test_darray_search_first(void)
+{
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)32, compare);
+	T_ERROR(darray == NULL);
+
+	const S arr[] = 
+	{
+		{ 0, 36 },
+		{ 1, 37 },
+		{ 2, 38 },
+		{ 3, 39 },
+		{ 0, 36 },
+		{ 1, 37 },
+		{ 2, 38 },
+		{ 3, 39 },
+		{ 0, 91 },
+		{ 1, 92 },
+		{ 2, 93 },
+		{ 3, 94 },
+	};
+
+	for (size_t index = 0; index < ARRAY_SIZE(arr); ++index)
+	{
+		T_EXPECT(darray_insert(darray, &arr[index]), 0);
+	}
+
+	S search_struct = {0};
+	S expt_struct = {0};
+	ssize_t search_index = 0;
+
+	search_index = 3;
+	search_struct.a = 3;
+	search_struct.b = 39;
+	
+	T_EXPECT(darray_search_first(darray, &search_struct, &expt_struct), search_index);
+	T_CHECK(expt_struct.a == arr[search_index].a);
+	T_CHECK(expt_struct.b == arr[search_index].b);
+
+	search_index = 8;
+	search_struct.a = 0;
+	search_struct.b = 91;
+	
+	T_EXPECT(darray_search_first(darray, &search_struct, &expt_struct), search_index);
+	T_CHECK(expt_struct.a == arr[search_index].a);
+	T_CHECK(expt_struct.b == arr[search_index].b);
+
+	search_index = -1;
+	search_struct.a = 4;
+	search_struct.b = 95;
+	
+	T_EXPECT(darray_search_first(darray, &search_struct, NULL), search_index);
+
+	darray_destroy(darray);
+}
+
+static void test_darray_search_last(void)
+{
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)32, compare);
+	T_ERROR(darray == NULL);
+
+	const S arr[] = 
+	{
+		{ 0, 36 },
+		{ 1, 37 },
+		{ 2, 38 },
+		{ 3, 39 },
+		{ 0, 36 },
+		{ 1, 37 },
+		{ 2, 38 },
+		{ 3, 39 },
+		{ 0, 91 },
+		{ 1, 92 },
+		{ 2, 93 },
+		{ 3, 94 },
+	};
+
+	for (size_t index = 0; index < ARRAY_SIZE(arr); ++index)
+	{
+		T_EXPECT(darray_insert(darray, &arr[index]), 0);
+	}
+
+	S search_struct = {0};
+	S expt_struct = {0};
+	ssize_t search_index = 0;
+
+	search_index = 7;
+	search_struct.a = 3;
+	search_struct.b = 39;
+	
+	T_EXPECT(darray_search_last(darray, &search_struct, &expt_struct), search_index);
+	T_CHECK(expt_struct.a == arr[search_index].a);
+	T_CHECK(expt_struct.b == arr[search_index].b);
+
+	search_index = 8;
+	search_struct.a = 0;
+	search_struct.b = 91;
+	
+	T_EXPECT(darray_search_first(darray, &search_struct, &expt_struct), search_index);
+	T_CHECK(expt_struct.a == arr[search_index].a);
+	T_CHECK(expt_struct.b == arr[search_index].b);
+
+	search_index = -1;
+	search_struct.a = 4;
+	search_struct.b = 95;
+	
+	T_EXPECT(darray_search_first(darray, &search_struct, NULL), search_index);
+
+	darray_destroy(darray);
+}
+
 int main(void)
 {
 	TEST_INIT("TESTING DYNAMIC ARRAY");
@@ -574,6 +684,8 @@ int main(void)
 	TEST(test_delete_sorted_unsorted_darray());
 	TEST(test_insert_pos_unsorted_darray());
 	TEST(test_delete_pos_unsorted_darray());
+	TEST(test_darray_search_first());
+	TEST(test_darray_search_last());
 	TEST_SUMMARY();
 
 	return 0;

@@ -35,7 +35,6 @@
 */
 #define check_types(v1, v2) __check_type(typeof(v1), typeof(v2))
 
-
 /* Static assertion */
 #define static_assert(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
 

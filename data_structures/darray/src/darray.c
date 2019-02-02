@@ -148,6 +148,56 @@ static int __darray_unsorted_insert(Darray * restrict darray, const void * restr
     return 0;
 }
 
+/*
+    Find first key from darray using compare function.
+
+    PARAMS:
+    @IN darray - pointer to dynamic array.
+    @IN key - pointer to search key.
+
+    RETURN:
+    %index in darray if success.
+    %-1 if failure.
+*/
+static ssize_t __darray_search_first(const Darray * const restrict darray, const void * const restrict key)
+{
+	const size_t size_of = darray->size_of;
+	const size_t length = darray->num_entries * size_of;
+
+	for (size_t offset = 0; offset < length; offset += size_of)
+	{
+		if (darray->cmp_f(__calc_offset(darray->array, offset), key) == 0)
+			return (ssize_t)(offset / size_of);
+	}
+
+	return -1;
+}
+
+/*
+    Find last key from darray using compare function.
+
+    PARAMS:
+    @IN darray - pointer to dynamic array.
+    @IN key - pointer to search key.
+
+    RETURN:
+    %index in darray if success.
+    %-1 if failure.
+*/
+static ssize_t __darray_search_last(const Darray * const restrict darray, const void * const restrict key)
+{
+	const ssize_t size_of = (ssize_t)darray->size_of;
+	const ssize_t length = (ssize_t)darray->num_entries * size_of;
+
+	for (ssize_t offset = length; offset >= 0; offset -= size_of)
+	{
+		if (darray->cmp_f(__calc_offset(darray->array, (size_t)offset), key) == 0)
+			return (offset / size_of);
+	}
+
+	return -1;
+}
+
 Darray *darray_create(const DARRAY_TYPE type, const size_t size_of, const size_t size, compare_func cmp_f)
 {
 	if (size_of < 1)
@@ -288,6 +338,44 @@ int darray_get_data(const Darray * const restrict darray, void * restrict val_ou
 	__ASSIGN__(*(char *)val_out, *(char *)src, darray->size_of);
 	
 	return 0;
+}
+
+ssize_t darray_search_first(const Darray * const restrict darray, const void * const restrict key, void * restrict val_out)
+{
+	if (darray == NULL || darray->array == NULL)
+		ERROR("darray == NULL || darray->array == NULL\n", -1);
+
+	if (key == NULL)
+		ERROR("key == NULL\n", -1);
+
+	ssize_t index = __darray_search_first(darray, key);
+
+	if (val_out != NULL && index != -1)
+	{
+		void *src = __calc_offset(darray->array, (size_t)index * darray->size_of);
+		__ASSIGN__(*(char *)val_out, *(char *)src, darray->size_of);
+	}
+
+	return index;
+}
+
+ssize_t darray_search_last(const Darray * const restrict darray, const void * const restrict key, void * restrict val_out)
+{
+	if (darray == NULL || darray->array == NULL)
+		ERROR("darray == NULL || darray->array == NULL\n", -1);
+
+	if (key == NULL)
+		ERROR("key == NULL\n", -1);
+
+	ssize_t index = __darray_search_last(darray, key);
+
+	if (val_out != NULL && index != -1)
+	{
+		void *src = __calc_offset(darray->array, (size_t)index * darray->size_of);
+		__ASSIGN__(*(char *)val_out, *(char *)src, darray->size_of);
+	}
+
+	return index;
 }
 
 ssize_t darray_get_num_entries(const Darray * const darray)
