@@ -17,7 +17,7 @@
 */
 static __inline__ void *__calc_offset(const void * const src, const size_t offset)
 {
-	return ((char *)src + offset);
+	return (void *)((char *)src + offset);
 }
 
 /*
@@ -161,6 +161,8 @@ Darray *darray_create(const DARRAY_TYPE type, const size_t size_of, const size_t
 	if (darray == NULL)
 		ERROR("malloc error\n", NULL);
 
+	darray->array = NULL;
+
 	if (size >= 1)
 	{
 		darray->array = malloc(size_of * size);
@@ -171,7 +173,7 @@ Darray *darray_create(const DARRAY_TYPE type, const size_t size_of, const size_t
 			ERROR("malloc error\n", NULL);
 		}
 	}
-
+	
 	darray->cmp_f = cmp_f;
 	darray->type = type;
 	darray->size_of = size_of;
@@ -215,6 +217,57 @@ int darray_delete(Darray * restrict darray, void * restrict val_out)
 	--darray->num_entries; 
 
 	return 0;
+}
+
+int darray_insert_pos(Darray * restrict darray, const void * restrict entry, const size_t pos)
+{
+	if (darray == NULL || entry == NULL)
+        ERROR("darray == NULL || entry == NULL\n", -1); 
+
+	if (darray->type == DARRAY_SORTED)
+		ERROR("darray->type == DARRAY_SORTED\n", -1);
+
+    if (pos > darray->num_entries)
+        ERROR("pos > darray->num_entries\n", -1);
+
+    	__darray_resize_insert(darray);
+
+	const void *src = __calc_offset(darray->array, (pos * darray->size_of));
+	void *dst = __calc_offset(darray->array, ((pos + 1) * darray->size_of));
+
+    (void)memmove(dst, src, ((darray->num_entries - pos) * darray->size_of));
+	__ASSIGN__(*(char *)src, *(char *)entry, darray->size_of);
+    ++darray->num_entries;
+
+    return 0;
+}
+
+int darray_delete_pos(Darray * restrict darray, void * restrict val_out, const size_t pos)
+{
+	if (darray == NULL || darray->array == NULL)
+        ERROR("darray == NULL || darray->array == NULL\n", -1);
+
+	if (darray->type == DARRAY_SORTED)
+		ERROR("darray->type == DARRAY_SORTED\n", -1);
+
+    if (pos > darray->num_entries)
+        ERROR("pos > darray->num_entries\n", -1);
+
+    if (val_out != NULL)
+    {
+		const void *dst = __calc_offset(darray->array, (pos * darray->size_of));
+		__ASSIGN__(*(char *)val_out, *(char *)dst, darray->size_of);
+    }
+
+	__darray_resize_delete(darray);
+
+	const void *src = __calc_offset(darray->array, ((pos + 1) * darray->size_of));
+	void *dst = __calc_offset(darray->array, (pos * darray->size_of));
+
+    (void)memmove(dst, src, ((darray->num_entries - pos - 1) * darray->size_of));
+    --darray->num_entries;
+
+    return 0;
 }
 
 int darray_get_data(const Darray * const restrict darray, void * restrict val_out, const size_t pos)
