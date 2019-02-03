@@ -1,13 +1,6 @@
-#include <dll.h>
+#include <list1d.h>
 #include <ctest.h>
-#include <stdint.h> 
-#include <assert.h>
-
-typedef struct S
-{
-	int64_t a;
-	int64_t b;
-} S;
+#include <stdint.h>
 
 int main(void)
 {

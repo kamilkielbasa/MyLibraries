@@ -1,2 +1,2 @@
 add_subdirectory(darray)
-add_subdirectory(dll)
+add_subdirectory(list1d)
