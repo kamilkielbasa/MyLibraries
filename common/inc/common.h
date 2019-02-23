@@ -14,7 +14,7 @@
 #include <stdio.h> 
 #include <string.h>
 #include <stdint.h>
-
+#include <stdlib.h>
 
 /* 
     Check types casting to pointers and cast return value to void.
@@ -106,5 +106,31 @@
 
 /* use this macro instead of inline */
 #define ___inline___ inline __attribute__(( always_inline ))
+
+
+/* tell compiler the this function or variable could not be used */
+#define ___unused___ __attribute__(( unused ))
+
+
+/* get max if the types are the same */
+#define MAX(a, b) \
+    __extension__ \
+    ({ \
+        typeof(a) __a = (a); \
+        typeof(b) __b = (b); \
+        check_types(__a, __b); \
+        __a > __b ? __a : __b; \
+    })
+
+
+/* get min if the types are the same */
+#define MIN(a, b) \
+    __extension__ \
+    ({ \
+        typeof(a) __a = (a); \
+        typeof(b) __b = (b); \
+        check_types(__a, __b); \
+        __a < __b ? __a : __b; \
+    })
 
 #endif /* _COMMON_H_ */
