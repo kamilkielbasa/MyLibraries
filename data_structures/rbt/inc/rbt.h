@@ -76,6 +76,20 @@ void rbt_destroy(Rbt *tree);
 void rbt_destroy_with_entries(Rbt *tree);
 
 /*
+    Insert data to RBT using compare function, if data is not actually in tree.
+
+    PARAMS:
+    @IN tree - pointer to RBT.
+    @IN data - pointer to entry data.
+
+    RETURN:
+    %0 if success.
+    %1 if key exists in tree.
+    %-1 if failure.
+*/
+int rbt_insert(Rbt * __restrict__ tree, const void * __restrict__ const data);
+
+/*
     Getter of min value using compare function in tree.
 
     PARAMS:

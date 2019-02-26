@@ -54,10 +54,36 @@ static void test_rbt_create(void)
     rbt_destroy(tree);
 }
 
+static void test_rbt_insert_only_root(void)
+{
+    Rbt *tree; 
+
+    MyStruct my_struct = { 2, 199, 200, 201 };
+    MyStruct *arr;
+    size_t size;
+
+    tree = rbt_create(sizeof(MyStruct), my_struct_compare, NULL);
+    T_EXPECT(rbt_insert(tree, &my_struct), 0);
+    T_EXPECT(rbt_get_data_size(tree), (ssize_t)sizeof(MyStruct));
+    T_EXPECT(rbt_get_num_entries(tree), (ssize_t)1);
+    T_EXPECT(rbt_get_height(tree), 1);
+    T_EXPECT(rbt_to_array(tree, (void *)&arr, &size), 0);
+
+    T_CHECK(size == (size_t)1);
+    T_CHECK(arr->key == my_struct.key);
+    T_CHECK(arr->a == my_struct.a);
+    T_CHECK(arr->b == my_struct.b);
+    T_CHECK(arr->c == my_struct.c);
+
+    FREE(arr);
+    rbt_destroy(tree);
+}
+
 int main(void)
 {
 	TEST_INIT("TESTING RED BLACK TREE");
     TEST(test_rbt_create());
+    TEST(test_rbt_insert_only_root());
 	TEST_SUMMARY();
 
 	return 0;
