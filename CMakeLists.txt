@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-add_compile_options("-std=gnu99" "-g" "-O3" "-Werror" "-Wall" "-Wextra" "-pedantic"
+add_compile_options("-std=gnu99" "-g" "-O0" "-Werror" "-Wall" "-Wextra" "-pedantic"
 		    "-Wcast-align" "-Winit-self" "-Wlogical-op" "-Wmissing-include-dirs" 
 		    "-Wredundant-decls" "-Wshadow" "-Wstrict-overflow=5" "-Wundef"  
 		    "-Wwrite-strings" "-Wpointer-arith" "-Wmissing-declarations"
