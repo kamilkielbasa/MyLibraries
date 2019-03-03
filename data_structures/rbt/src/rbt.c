@@ -133,7 +133,7 @@ ___inline___ static void __rbt_left_rotate(Rbt *tree, Rbt_node *node);
     @IN parent - pointer to parent.
 
     RETURN:
-    %NULL iff failure.
+    %NULL if failure.
     %Pointer to Rbt_node iff success.
 */
 ___inline___ static Rbt_node* __rbt_create_node(const void * __restrict__ const data, const size_t size_of, const Rbt_node * __restrict const parent);
@@ -163,6 +163,19 @@ static int __rbt_insert_fixup(Rbt * __restrict__ tree, Rbt_node * __restrict__ n
 */
 static void __rbt_rek_destroy(Rbt_node *node);
 
+/*
+    Search node using compare function (key equals data_key)
+
+    PARAMS:
+    @IN tree - pointer to RBT.
+    @IN data_key - addr of data_key.
+
+    RETURN:
+    %NULL if failure.
+    %Pointer to found Rbt_node if success.
+*/
+___inline___ static Rbt_node* __rbt_search_node(const Rbt * __restrict__ const tree, const void * __restrict__ const data_key);
+
 ___inline___ static Rbt_node* __rbt_min_node(const Rbt_node *node)
 {
     assert(node != NULL);
@@ -175,7 +188,7 @@ ___inline___ static Rbt_node* __rbt_min_node(const Rbt_node *node)
         parent = (Rbt_node *)node;
         node = node->left_son;
     }
-    
+
     return parent;
 }
 
@@ -452,6 +465,26 @@ static int __rbt_insert_fixup(Rbt * __restrict__ tree, Rbt_node * __restrict__ n
     return 0;
 }
 
+___inline___ static Rbt_node *__rbt_search_node(const Rbt * __restrict__ const tree, const void * __restrict__ const data_key)
+{
+    assert(tree != NULL);
+    assert(data_key != NULL);
+
+    Rbt_node *node = tree->root;
+
+    while (node != sentinel)
+    {
+        if (tree->cmp_f(node->data, data_key) == 0)
+            return node;
+        if (tree->cmp_f(node->data, data_key) > 0)
+            node = node->left_son;
+        else 
+            node = node->right_son;
+    }
+
+    return NULL;
+}
+
 Rbt* rbt_create(size_t size_of, compare_f cmp_f, destructor_f destroy_f)
 {
     Rbt *tree;
@@ -600,6 +633,43 @@ int rbt_max(const Rbt * __restrict__ const tree, void * __restrict__ data)
     __ASSIGN__(*(BYTE *)data, *(BYTE *)node->data, tree->size_of);
     
     return 0;
+}
+
+int rbt_search(const Rbt * __restrict__ const tree, const void * const data_key, const void * data_out)
+{
+    if (tree == NULL)
+        ERROR("tree == NULL\n", -1);
+
+    if (tree->root == sentinel)
+        ERROR("tree->root == sentinel\n", -1);
+
+    if (data_key == NULL)
+        ERROR("data_key == NULL\n", -1);
+
+    if (data_out == NULL)
+        ERROR("data_out == NULL\n", -1);
+
+    Rbt_node *node = __rbt_search_node(tree, data_key);
+
+    if (node == NULL)
+        ERROR("key does not exist in tree\n", 1);
+
+    __ASSIGN__(*(BYTE *)data_out, *(BYTE *)node->data, tree->size_of);
+    return 0;
+}
+
+bool rbt_key_exist(const Rbt * __restrict__ const tree, const void * __restrict__ const data_key)
+{
+    if (tree == NULL)
+        ERROR("tree == NULL\n", -1);
+
+    if (tree->root == sentinel)
+        ERROR("tree->root == sentinel\n", -1);
+
+    if (data_key == NULL)
+        ERROR("data_key == NULL\n", -1);
+
+    return __rbt_search_node(tree, data_key) != NULL;
 }
 
 int rbt_to_array(const Rbt * __restrict__ const tree, void * __restrict__ array, size_t * __restrict__ size)

@@ -13,6 +13,7 @@
 #include <stddef.h> /* size_t */
 #include <common.h> /* __unused__ */
 #include <sys/types.h> /* ssize_t */
+#include <stdbool.h> /* bool */
 
 typedef char BYTE;
 typedef BYTE Rbt_color_t;
@@ -125,6 +126,33 @@ int rbt_min(const Rbt * __restrict__ const tree, void * __restrict__ data);
     %Negative value if failure.
 */
 int rbt_max(const Rbt * __restrict__ const tree, void * __restrict__ data);
+
+/*
+    Search the data in RBT using compare function (data_key equals key in tree).
+
+    PARAMS:
+    @IN tree - pointer to RBT.
+    @IN data_key - addr of data with search key.
+    @out data_out - returned data with addr.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+int rbt_search(const Rbt * __restrict__ const tree, const void * const data_key, const void * data_out);
+
+/*
+    Check if key existing in RBT.
+
+    PARAMS:
+    @IN tree - pointer to RBT.
+    @IN data_key - addr of data with search key.
+
+    RETURN:
+    %true if key exist.
+    %false if key doesn't exist.
+*/
+bool rbt_key_exist(const Rbt * __restrict__ const tree, const void * __restrict__ const data_key);
 
 /*
     Convert Red-Black Tree to sorted array.

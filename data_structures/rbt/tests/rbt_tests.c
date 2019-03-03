@@ -218,6 +218,195 @@ static void test_rbt_insert_the_same(void)
     rbt_rek_destroy(tree);
 }
 
+static void test_rbt_min_max(void)
+{
+    Rbt *tree;
+
+    int *arr;
+    size_t size = 20;
+
+    int *rarr;
+    size_t rsize;
+
+    int val;
+    int min;
+    int max;
+
+    arr = (int *)malloc(sizeof(int) * size);
+    T_ERROR(arr == NULL);
+
+    for (size_t i = 0; i < size; ++i)
+        arr[i] = (int)(i + 1);
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        size_t index = (size_t)rand() % (size - 1);
+        SWAP(*(uint8_t *)&arr[index], *(uint8_t *)&arr[size - i - 1], sizeof(int));
+    }
+
+    tree = rbt_create(sizeof(int), my_compare_int, NULL);
+    T_ERROR(tree == NULL);
+    T_EXPECT(rbt_get_data_size(tree), (ssize_t)sizeof(int));
+    T_EXPECT(rbt_get_num_entries(tree), (ssize_t)0);
+
+    for (size_t i = 0; i < size; ++i)
+        T_EXPECT(rbt_insert(tree, (void *)&arr[i]), 0);
+
+    qsort((void *)&arr[0], size, sizeof(int), my_compare_int);
+
+    min = arr[0];
+    max = arr[size - 1];
+
+    T_EXPECT(rbt_to_array(tree, (void *)&rarr, &rsize), 0);
+    T_CHECK(size == rsize);
+    T_EXPECT(memcmp((const void *)&arr[0], (const void *)&rarr[0], size), 0);
+
+    T_EXPECT(rbt_get_data_size(tree), (ssize_t)sizeof(int));
+    T_EXPECT(rbt_get_num_entries(tree), (ssize_t)size);
+    T_EXPECT(correct_height(rbt_get_height(tree), (size_t)rbt_get_num_entries(tree)), (bool)true);
+
+    T_EXPECT(rbt_min(tree, (void *)&val), 0);
+    T_CHECK(min == val);
+
+    T_EXPECT(rbt_max(tree, (void *)&val), 0);
+    T_CHECK(max == val);
+
+    FREE(arr);
+    FREE(rarr);
+    // rbt_destroy(tree);
+    rbt_rek_destroy(tree);
+}
+
+static void test_rbt_search(void)
+{
+    Rbt *tree;
+
+    MyStruct *arr;
+    size_t size = 20;
+
+    MyStruct *rarr;
+    size_t rsize;
+
+    MyStruct val;
+
+    arr = (MyStruct *)malloc(sizeof(MyStruct) * size);
+    T_ERROR(arr == NULL);
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        arr[i].key = (int64_t)(i + 1);
+        arr[i].a = (int64_t)(i * 2);
+        arr[i].b = (int64_t)(i * 3);
+        arr[i].c = (int64_t)(i * 4);
+    }
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        size_t index = (size_t)rand() % (size - 1);
+        SWAP(*(uint8_t *)&arr[index], *(uint8_t *)&arr[size - i - 1], sizeof(MyStruct));
+    }
+
+    tree = rbt_create(sizeof(MyStruct), my_struct_compare, NULL);
+    T_ERROR(tree == NULL);
+    T_EXPECT(rbt_get_data_size(tree), (ssize_t)sizeof(MyStruct));
+    T_EXPECT(rbt_get_num_entries(tree), (ssize_t)0);
+
+    for (size_t i = 0; i < size; ++i)
+        T_EXPECT(rbt_insert(tree, (void *)&arr[i]), 0);
+
+    qsort((void *)&arr[0], size, sizeof(MyStruct), my_struct_compare);
+
+    T_EXPECT(rbt_to_array(tree, (void *)&rarr, &rsize), 0);
+    T_CHECK(size == rsize);
+    T_EXPECT(memcmp((const void *)&arr[0], (const void *)&rarr[0], size), 0);
+
+    T_EXPECT(rbt_get_data_size(tree), (ssize_t)sizeof(MyStruct));
+    T_EXPECT(rbt_get_num_entries(tree), (ssize_t)size);
+    T_EXPECT(correct_height(rbt_get_height(tree), (size_t)rbt_get_num_entries(tree)), (bool)true);
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        T_EXPECT(rbt_search(tree, (void *)&arr[i], (void *)&val), 0);
+        T_CHECK(arr[i].key == val.key);
+        T_CHECK(arr[i].a == val.a);
+        T_CHECK(arr[i].b == val.b);
+        T_CHECK(arr[i].c == val.c);
+    }
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        val.key = arr[i].key + (int64_t)size;
+        T_EXPECT(rbt_search(tree, (void *)&val, (void *)&val), 1);
+    }
+
+    FREE(arr);
+    FREE(rarr);
+    // rbt_destroy(tree);
+    rbt_rek_destroy(tree);
+}
+
+static void test_rbt_key_exist(void)
+{
+    Rbt *tree;
+
+    MyStruct *arr;
+    size_t size = 20;
+
+    MyStruct *rarr;
+    size_t rsize;
+
+    MyStruct val;
+
+    arr = (MyStruct *)malloc(sizeof(MyStruct) * size);
+    T_ERROR(arr == NULL);
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        arr[i].key = (int64_t)(i + 1);
+        arr[i].a = (int64_t)(i * 2);
+        arr[i].b = (int64_t)(i * 3);
+        arr[i].c = (int64_t)(i * 4);
+    }
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        size_t index = (size_t)rand() % (size - 1);
+        SWAP(*(uint8_t *)&arr[index], *(uint8_t *)&arr[size - i - 1], sizeof(MyStruct));
+    }
+
+    tree = rbt_create(sizeof(MyStruct), my_struct_compare, NULL);
+    T_ERROR(tree == NULL);
+    T_EXPECT(rbt_get_data_size(tree), (ssize_t)sizeof(MyStruct));
+    T_EXPECT(rbt_get_num_entries(tree), (ssize_t)0);
+
+    for (size_t i = 0; i < size; ++i)
+        T_EXPECT(rbt_insert(tree, (void *)&arr[i]), 0);
+
+    qsort((void *)&arr[0], size, sizeof(MyStruct), my_struct_compare);
+
+    T_EXPECT(rbt_to_array(tree, (void *)&rarr, &rsize), 0);
+    T_CHECK(size == rsize);
+    T_EXPECT(memcmp((const void *)&arr[0], (const void *)&rarr[0], size), 0);
+
+    T_EXPECT(rbt_get_data_size(tree), (ssize_t)sizeof(MyStruct));
+    T_EXPECT(rbt_get_num_entries(tree), (ssize_t)size);
+    T_EXPECT(correct_height(rbt_get_height(tree), (size_t)rbt_get_num_entries(tree)), (bool)true);
+
+    for (size_t i = 0; i < size; ++i)
+        T_EXPECT(rbt_key_exist(tree, (void *)&arr[i]), (bool)true);
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        val.key = arr[i].key + (int64_t)size;
+        T_EXPECT(rbt_key_exist(tree, (void *)&val), (bool)false);
+    }
+
+    FREE(arr);
+    FREE(rarr);
+    // rbt_destroy(tree);
+    rbt_rek_destroy(tree);
+}
+
 int main(void)
 {
 	TEST_INIT("TESTING RED BLACK TREE");
@@ -225,6 +414,9 @@ int main(void)
     TEST(test_rbt_insert_only_root());
     TEST(test_rbt_insert());
     TEST(test_rbt_insert_the_same());
+    TEST(test_rbt_min_max());
+    TEST(test_rbt_search());
+    TEST(test_rbt_key_exist());
 	TEST_SUMMARY();
 
 	return 0;
