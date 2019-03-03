@@ -16,6 +16,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+typedef char BYTE;
+
 /* 
     Check types casting to pointers and cast return value to void.
     Pointers arithmetins of different types doesn't exist.
@@ -97,7 +99,7 @@
 #define SWAP(dst, src, size) \
     do { \
         check_types(dst, src); \
-        uint8_t __buffer__[size]; \
+        BYTE __buffer__[size]; \
         __ASSIGN__(__buffer__[0], dst, size); \
         __ASSIGN__(dst, src, size); \
         __ASSIGN__(src, __buffer__[0], size); \

@@ -142,7 +142,7 @@ static void test_rbt_insert(void)
     for (size_t i = 0; i < size; ++i)
     {
         size_t index = (size_t)rand() % (size - 1);
-        SWAP(*(uint8_t *)&arr[index], *(uint8_t *)&arr[size - i - 1], sizeof(int));
+        SWAP(*(BYTE *)&arr[index], *(BYTE *)&arr[size - i - 1], sizeof(int));
     }
 
     tree = rbt_create(sizeof(int), my_compare_int, NULL);
@@ -188,7 +188,7 @@ static void test_rbt_insert_the_same(void)
     for (size_t i = 0; i < size; ++i)
     {
         size_t index = (size_t)rand() % (size - 1);
-        SWAP(*(uint8_t *)&arr[index], *(uint8_t *)&arr[size - i - 1], sizeof(int));
+        SWAP(*(BYTE *)&arr[index], *(BYTE *)&arr[size - i - 1], sizeof(int));
     }
 
     tree = rbt_create(sizeof(int), my_compare_int, NULL);
@@ -241,7 +241,7 @@ static void test_rbt_min_max(void)
     for (size_t i = 0; i < size; ++i)
     {
         size_t index = (size_t)rand() % (size - 1);
-        SWAP(*(uint8_t *)&arr[index], *(uint8_t *)&arr[size - i - 1], sizeof(int));
+        SWAP(*(BYTE *)&arr[index], *(BYTE *)&arr[size - i - 1], sizeof(int));
     }
 
     tree = rbt_create(sizeof(int), my_compare_int, NULL);
@@ -303,7 +303,7 @@ static void test_rbt_search(void)
     for (size_t i = 0; i < size; ++i)
     {
         size_t index = (size_t)rand() % (size - 1);
-        SWAP(*(uint8_t *)&arr[index], *(uint8_t *)&arr[size - i - 1], sizeof(MyStruct));
+        SWAP(*(BYTE *)&arr[index], *(BYTE *)&arr[size - i - 1], sizeof(MyStruct));
     }
 
     tree = rbt_create(sizeof(MyStruct), my_struct_compare, NULL);
@@ -371,7 +371,7 @@ static void test_rbt_key_exist(void)
     for (size_t i = 0; i < size; ++i)
     {
         size_t index = (size_t)rand() % (size - 1);
-        SWAP(*(uint8_t *)&arr[index], *(uint8_t *)&arr[size - i - 1], sizeof(MyStruct));
+        SWAP(*(BYTE *)&arr[index], *(BYTE *)&arr[size - i - 1], sizeof(MyStruct));
     }
 
     tree = rbt_create(sizeof(MyStruct), my_struct_compare, NULL);

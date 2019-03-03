@@ -15,7 +15,6 @@
 #include <sys/types.h> /* ssize_t */
 #include <stdbool.h> /* bool */
 
-typedef char BYTE;
 typedef BYTE Rbt_color_t;
 typedef int (*compare_f)(const void *, const void *);
 typedef void (*destructor_f)(void *);
@@ -100,6 +99,35 @@ void rbt_rek_destroy(Rbt *tree);
     %-1 if failure.
 */
 int rbt_insert(Rbt * __restrict__ tree, const void * __restrict__ const data);
+
+/*
+    Delete data from RBT using compare function, if data is actually in tree.
+
+    PARAMS:
+    @IN tree - pointer to RBT.
+    @IN data_key - addr of data with key do delete.
+
+    RETURN:
+    %0 if success.
+    %1 if key doesn't exists in tree.
+    %-1 if failure.
+*/
+int rbt_delete(Rbt * __restrict__ tree, const void * __restrict__ const data_key);
+
+/*
+    Delete data from RBT using compare function, if data is actually in tree.
+    (Destructor will be called).
+
+    PARAMS:
+    @IN tree - pointer to RBT.
+    @IN data_key - addr of data with key do delete.
+
+    RETURN:
+    %0 if success.
+    %1 if key doesn't exists in tree.
+    %-1 if failure.
+*/
+int rbt_delete_with_entries(Rbt * __restrict__ tree, const void * __restrict__ const data_key);
 
 /*
     Getter of min value using compare function in tree.

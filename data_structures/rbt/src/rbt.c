@@ -139,7 +139,7 @@ ___inline___ static void __rbt_left_rotate(Rbt *tree, Rbt_node *node);
 ___inline___ static Rbt_node* __rbt_create_node(const void * __restrict__ const data, const size_t size_of, const Rbt_node * __restrict const parent);
 
 /*
-    Fixup RBT starting from inserted node.
+    Fix property RBT after insert, starting from inserted node.
 
     PARAMS:
     @IN tree - pointer to tree.
@@ -175,6 +175,35 @@ static void __rbt_rek_destroy(Rbt_node *node);
     %Pointer to found Rbt_node if success.
 */
 ___inline___ static Rbt_node* __rbt_search_node(const Rbt * __restrict__ const tree, const void * __restrict__ const data_key);
+
+/*
+    Delete entry with key equals data_key using compare function.
+
+    PARAMS:
+    @IN tree - pointer to RBT.
+    @IN data_key - fake data with real key.
+    @IN destroy - call destructor.
+
+    RETURN:
+    %0 if success.
+    %1 if key doesn't exist.
+    %-1 if failure.
+*/
+static int __rbt_delete(Rbt * __restrict__ tree, const void * __restrict__ const data_key, bool destroy);
+
+/*
+    Fix property RBT after delete, starting from deleted node.
+
+    PARAMS:
+    @IN tree - pointer to tree.
+    @IN node - pointer to node.
+
+    RETURN:
+    %0 if success.
+    %1 if key doesn't exist.
+    %-1 if failure.
+*/
+static int __rbt_delete_fixup(Rbt *tree, Rbt_node *node);
 
 ___inline___ static Rbt_node* __rbt_min_node(const Rbt_node *node)
 {
@@ -485,6 +514,146 @@ ___inline___ static Rbt_node *__rbt_search_node(const Rbt * __restrict__ const t
     return NULL;
 }
 
+static int __rbt_delete(Rbt * tree, const void * __restrict__ const data_key, bool destroy)
+{
+    assert(tree != NULL);
+    assert(data_key != NULL);
+    assert(tree->root != sentinel);
+
+    Rbt_node *node = __rbt_search_node(tree, data_key);
+
+    if (node == NULL)
+        ERROR("key doesn't exist in RBT\n", 1);
+
+    Rbt_node *ptr; 
+    Rbt_node *temp; 
+
+    if (node->left_son == sentinel || node->right_son == sentinel)
+        temp = node;
+    else
+        temp = __rbt_successor(node);
+
+
+    if (temp->left_son != sentinel)
+        ptr = temp->left_son;
+    else
+        ptr = temp->right_son;
+
+
+    ptr->parent = temp->parent;
+
+
+    if (temp->parent == sentinel)
+        tree->root = ptr;
+    else
+    {
+        if (temp == temp->parent->left_son)
+            temp->parent->left_son = ptr;
+        else
+            temp->parent->right_son = ptr;
+    }
+
+
+    if (temp != node)
+        __ASSIGN__(*(BYTE *)node, *(BYTE *)temp, sizeof(Rbt_node));
+    
+    if (temp->color == RBT_BLACK)
+        __rbt_delete_fixup(tree, ptr);
+
+    if (destroy == true && tree->destroy_f != NULL)
+        tree->destroy_f((void *)&node->data);
+    
+    __rbt_node_destroy(node);
+
+    --tree->nodes;
+
+    return 0;
+}
+
+static int __rbt_delete_fixup(Rbt *tree, Rbt_node *node)
+{
+    assert(tree != NULL);
+    assert(node != NULL);
+
+    Rbt_node *ptr;
+
+    while (node != tree->root && node->color == RBT_BLACK)
+    {
+        if (node == node->parent->left_son)
+        {
+            ptr = node->parent->right_son;
+
+            if (ptr->color == RBT_RED)
+            {
+                ptr->color = RBT_BLACK;
+                node->parent->color = RBT_RED;
+                __rbt_left_rotate(tree, node->parent);
+                ptr = node->parent->right_son;
+            }
+
+            if (ptr->left_son->color == RBT_BLACK && ptr->right_son->color == RBT_BLACK)
+            {
+                ptr->color = RBT_RED;
+                node = node->parent;
+            }
+            else
+            {
+                if (ptr->right_son->color == RBT_BLACK)
+                {
+                    ptr->left_son->color = RBT_BLACK;
+                    ptr->color = RBT_RED;
+                    __rbt_right_rotate(tree, ptr);
+                    ptr = node->parent->right_son;
+                }
+
+                ptr->color = node->parent->color;
+                node->parent->color = RBT_BLACK;
+                ptr->right_son->color = RBT_BLACK;
+                __rbt_left_rotate(tree, node->parent);
+                node = tree->root;
+            }
+        }
+        else
+        {
+            ptr = node->parent->left_son;
+
+            if (ptr->color == RBT_RED)
+            {
+                ptr->color = RBT_BLACK;
+                node->parent->color = RBT_RED;
+                __rbt_right_rotate(tree, node->parent);
+                ptr = node->parent->left_son;
+            }
+
+            if (ptr->right_son->color == RBT_BLACK && ptr->left_son->color == RBT_BLACK)
+            {
+                ptr->color = RBT_RED;
+                node = node->parent;
+            }
+            else
+            {
+                if (ptr->left_son->color == RBT_BLACK)
+                {
+                    ptr->right_son->color = RBT_BLACK;
+                    ptr->color = RBT_RED;
+                    __rbt_left_rotate(tree, ptr);
+                    ptr = node->parent->left_son;
+                }
+
+                ptr->color = node->parent->color;
+                node->parent->color = RBT_BLACK;
+                ptr->left_son->color = RBT_BLACK;
+                __rbt_right_rotate(tree, node->parent);
+                node = tree->root;
+            }    
+        }
+    }
+
+    node->color = RBT_BLACK;
+
+    return 0;
+}
+
 Rbt* rbt_create(size_t size_of, compare_f cmp_f, destructor_f destroy_f)
 {
     Rbt *tree;
@@ -590,7 +759,18 @@ int rbt_insert(Rbt * __restrict__ tree, const void * __restrict__ const data)
     }
 
     ++tree->nodes;
+
     return 0;
+}
+
+int rbt_delete(Rbt * __restrict__ tree, const void * __restrict__ const data_key)
+{
+    return __rbt_delete(tree, data_key, false);
+}
+
+int rbt_delete_with_entries(Rbt * __restrict__ tree, const void * __restrict__ const data_key)
+{
+    return __rbt_delete(tree, data_key, true);
 }
 
 int rbt_min(const Rbt * __restrict__ const tree, void * __restrict__ data)
