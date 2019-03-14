@@ -16,13 +16,29 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+
+/* Basic type for copying memory */
 typedef char BYTE;
+
+
+/* Compare function */
+typedef int (*compare_f)(const void *, const void *);
+
+
+/* Destructor function */
+typedef void (*destructor_f)(void *);
+
+
+/* Print function */
+typedef void (*data_print_f)(void *);
+
 
 /* 
     Check types casting to pointers and cast return value to void.
     Pointers arithmetins of different types doesn't exist.
 */
 #define __check_type(t1, t2) ((void)(!((t1 *)0 - (t2 *)0)))
+
 
 /* 
     Checking types of variables.
@@ -36,6 +52,7 @@ typedef char BYTE;
     check_types(i, d);  // fatal error
 */
 #define check_types(v1, v2) __check_type(typeof(v1), typeof(v2))
+
 
 /* Static assertion */
 #define static_assert(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
@@ -69,7 +86,7 @@ typedef char BYTE;
 #define FREE(ptr) \
     do { \
         free(ptr); \
-        ptr = NULL; \
+        (ptr) = NULL; \
     } while (0) \
 
 
