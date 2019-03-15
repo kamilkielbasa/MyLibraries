@@ -48,6 +48,20 @@ ___inline___ static Rbt_node* __rbt_max_node(const Rbt_node *node);
 
 
 /*
+    Search node using compare function (key equals data_key)
+
+    PARAMS:
+    @IN tree - pointer to RBT.
+    @IN data_key - addr of data_key.
+
+    RETURN:
+    %NULL if failure.
+    %Pointer to found Rbt_node if success.
+*/
+___inline___ static Rbt_node* __rbt_search_node(const Rbt * __restrict__ const tree, const void * __restrict__ const data_key);
+
+
+/*
     Get successor of node.
 
     PARAMS:
@@ -73,30 +87,6 @@ ___inline___ static Rbt_node* __rbt_successor(const Rbt_node *node);
 ___inline___ static Rbt_node* __rbt_predecessor(const Rbt_node *node);
 
 
-/*
-    Destroy node.
-
-    PARAMS:
-    @IN node - pointer to node.
-
-    RETURN:
-    %This is void function.
-*/
-___inline___ static void __rbt_node_destroy(Rbt_node *node);
-
-
-/*
-    Destroy whole RBT.
-
-    PARAMS:
-    @IN node - pointer to node.
-    @IN destroy - call destructor.
-
-    RETURN:
-    %This is void function.
-*/
-static void __rbt_destroy(Rbt *tree, bool destroy);
-
 
 /*
     Calculate height of the RBT.
@@ -112,19 +102,6 @@ static int __rbt_rek_get_height(const Rbt_node * const node);
 
 
 /*
-    Right tree rotate.
-
-    PARAMS:
-    @IN tree - pointer to tree.
-    @IN node - pointer to tree node.
-
-    RETURN:
-    %This is void function.
-*/
-___inline___ static void __rbt_right_rotate(Rbt *tree, Rbt_node *node);
-
-
-/*
     Left tree rotate.
 
     PARAMS:
@@ -135,6 +112,19 @@ ___inline___ static void __rbt_right_rotate(Rbt *tree, Rbt_node *node);
     %This is void function.
 */
 ___inline___ static void __rbt_left_rotate(Rbt *tree, Rbt_node *node);
+
+
+/*
+    Right tree rotate.
+
+    PARAMS:
+    @IN tree - pointer to tree.
+    @IN node - pointer to tree node.
+
+    RETURN:
+    %This is void function.
+*/
+___inline___ static void __rbt_right_rotate(Rbt *tree, Rbt_node *node);
 
 
 /*
@@ -153,6 +143,18 @@ ___inline___ static Rbt_node* __rbt_create_node(const void * __restrict__ const 
 
 
 /*
+    Destroy node.
+
+    PARAMS:
+    @IN node - pointer to node.
+
+    RETURN:
+    %This is void function.
+*/
+___inline___ static void __rbt_node_destroy(Rbt_node *node);
+
+
+/*
     Fix property RBT after insert, starting from inserted node.
 
     PARAMS:
@@ -164,36 +166,6 @@ ___inline___ static Rbt_node* __rbt_create_node(const void * __restrict__ const 
     %Negative value if failure.
 */
 static int __rbt_insert_fixup(Rbt * __restrict__ tree, Rbt_node * __restrict__ node);
-
-
-/*
-    Search node using compare function (key equals data_key)
-
-    PARAMS:
-    @IN tree - pointer to RBT.
-    @IN data_key - addr of data_key.
-
-    RETURN:
-    %NULL if failure.
-    %Pointer to found Rbt_node if success.
-*/
-___inline___ static Rbt_node* __rbt_search_node(const Rbt * __restrict__ const tree, const void * __restrict__ const data_key);
-
-
-/*
-    Delete entry with key equals data_key using compare function.
-
-    PARAMS:
-    @IN tree - pointer to RBT.
-    @IN data_key - fake data with real key.
-    @IN destroy - call destructor.
-
-    RETURN:
-    %0 if success.
-    %1 if key doesn't exist.
-    %-1 if failure.
-*/
-static int __rbt_delete(Rbt * __restrict__ tree, const void * __restrict__ const data_key, bool destroy);
 
 
 /*
@@ -209,6 +181,47 @@ static int __rbt_delete(Rbt * __restrict__ tree, const void * __restrict__ const
     %-1 if failure.
 */
 static int __rbt_delete_fixup(Rbt *tree, Rbt_node *node);
+
+
+/*
+    Destroy whole RBT.
+
+    PARAMS:
+    @IN node - pointer to node.
+    @IN destroy - call destructor.
+
+    RETURN:
+    %This is void function.
+*/
+static void __rbt_destroy(Rbt *tree, bool destroy);
+
+/*
+    Transplant two nodes in RBT.
+
+    PARAMS:
+    @IN tree - pointer to RBT.
+    @IN ptr1 - pointer to node.
+    @IN ptr2 - pointer to node.
+
+    RETURN:
+    %This is void function.
+*/
+___inline___ static void __rbt_transplant(Rbt * tree, Rbt_node *ptr1, Rbt_node *ptr2);
+
+/*
+    Delete entry with key equals data_key using compare function.
+
+    PARAMS:
+    @IN tree - pointer to RBT.
+    @IN data_key - fake data with real key.
+    @IN destroy - call destructor.
+
+    RETURN:
+    %0 if success.
+    %1 if key doesn't exist.
+    %-1 if failure.
+*/
+static int __rbt_delete(Rbt * __restrict__ tree, const void * __restrict__ const data_key, bool destroy);
 
 
 ___inline___ static Rbt_node* __rbt_min_node(const Rbt_node *node)
@@ -242,6 +255,27 @@ ___inline___ static Rbt_node* __rbt_max_node(const Rbt_node *node)
     }
 
     return parent;
+}
+
+
+___inline___ static Rbt_node *__rbt_search_node(const Rbt * __restrict__ const tree, const void * __restrict__ const data_key)
+{
+    assert(tree != NULL);
+    assert(data_key != NULL);
+
+    Rbt_node *node = tree->root;
+
+    while (node != sentinel)
+    {
+        if (tree->cmp_f(node->data, data_key) == 0)
+            return node;
+        if (tree->cmp_f(node->data, data_key) > 0)
+            node = node->left_son;
+        else 
+            node = node->right_son;
+    }
+
+    return NULL;
 }
 
 
@@ -286,51 +320,6 @@ ___inline___ static Rbt_node* __rbt_predecessor(const Rbt_node *node)
     }
 
     return parent;
-}
-
-
-___inline___ static void __rbt_node_destroy(Rbt_node *node)
-{
-    if (node == NULL)
-        return;
-
-    FREE(node);
-}
-
-
-static void __rbt_destroy(Rbt *tree, bool destroy)
-{
-    if (tree == NULL)
-        return;
-
-    if (tree->root == NULL || tree->root == sentinel)
-    {
-        FREE(tree);
-        return;
-    }
-
-    // Possible stack overflow.
-    // It'll be refactored to BFS algorithm with fifo.
-    // fifo size 2*log2(height) + 2.
-    Rbt_node *array_of_nodes[tree->nodes];
-
-    Rbt_node *node = __rbt_min_node(tree->root);
-
-    for (size_t i = 0; i < tree->nodes; ++i)
-    {
-        array_of_nodes[i] = node;
-        node = __rbt_successor(node);
-    }
-
-    for (size_t i = 0; i < tree->nodes; ++i)
-    {
-        if (destroy == true && tree->destroy_f != NULL)
-            tree->destroy_f((void *)array_of_nodes[i]->data);
-
-        FREE(array_of_nodes[i]);
-    }
-
-    FREE(tree);
 }
 
 
@@ -447,6 +436,15 @@ ___inline___ static Rbt_node* __rbt_create_node(const void * __restrict__ const 
 }
 
 
+___inline___ static void __rbt_node_destroy(Rbt_node *node)
+{
+    if (node == NULL)
+        return;
+
+    FREE(node);
+}
+
+
 static int __rbt_insert_fixup(Rbt * __restrict__ tree, Rbt_node * __restrict__ node)
 {
     assert(tree != NULL);
@@ -507,84 +505,6 @@ static int __rbt_insert_fixup(Rbt * __restrict__ tree, Rbt_node * __restrict__ n
     }
 
     tree->root->color = RBT_BLACK;
-    return 0;
-}
-
-
-___inline___ static Rbt_node *__rbt_search_node(const Rbt * __restrict__ const tree, const void * __restrict__ const data_key)
-{
-    assert(tree != NULL);
-    assert(data_key != NULL);
-
-    Rbt_node *node = tree->root;
-
-    while (node != sentinel)
-    {
-        if (tree->cmp_f(node->data, data_key) == 0)
-            return node;
-        if (tree->cmp_f(node->data, data_key) > 0)
-            node = node->left_son;
-        else 
-            node = node->right_son;
-    }
-
-    return NULL;
-}
-
-
-static int __rbt_delete(Rbt * tree, const void * __restrict__ const data_key, bool destroy)
-{
-    assert(tree != NULL);
-    assert(data_key != NULL);
-    assert(tree->root != sentinel);
-
-    Rbt_node *node = __rbt_search_node(tree, data_key);
-
-    if (node == NULL)
-        ERROR("key doesn't exist in RBT\n", 1);
-
-    Rbt_node *ptr; 
-    Rbt_node *temp; 
-
-    if (node->left_son == sentinel || node->right_son == sentinel)
-        temp = node;
-    else
-        temp = __rbt_successor(node);
-
-
-    if (temp->left_son != sentinel)
-        ptr = temp->left_son;
-    else
-        ptr = temp->right_son;
-
-
-    ptr->parent = temp->parent;
-
-
-    if (temp->parent == sentinel)
-        tree->root = ptr;
-    else
-    {
-        if (temp == temp->parent->left_son)
-            temp->parent->left_son = ptr;
-        else
-            temp->parent->right_son = ptr;
-    }
-
-
-    if (temp != node)
-        __ASSIGN__(*(BYTE *)node, *(BYTE *)temp, sizeof(Rbt_node));
-    
-    if (temp->color == RBT_BLACK)
-        __rbt_delete_fixup(tree, ptr);
-
-    if (destroy == true && tree->destroy_f != NULL)
-        tree->destroy_f((void *)&node->data);
-    
-    __rbt_node_destroy(node);
-
-    --tree->nodes;
-
     return 0;
 }
 
@@ -669,6 +589,119 @@ static int __rbt_delete_fixup(Rbt *tree, Rbt_node *node)
     }
 
     node->color = RBT_BLACK;
+
+    return 0;
+}
+
+
+static void __rbt_destroy(Rbt *tree, bool destroy)
+{
+    if (tree == NULL)
+        return;
+
+    if (tree->root == NULL || tree->root == sentinel)
+    {
+        FREE(tree);
+        return;
+    }
+
+    // Possible stack overflow.
+    // It'll be refactored to BFS algorithm with fifo.
+    // fifo size 2*log2(height) + 2.
+    Rbt_node *array_of_nodes[tree->nodes];
+
+    Rbt_node *node = __rbt_min_node(tree->root);
+
+    for (size_t i = 0; i < tree->nodes; ++i)
+    {
+        array_of_nodes[i] = node;
+        node = __rbt_successor(node);
+    }
+
+    for (size_t i = 0; i < tree->nodes; ++i)
+    {
+        if (destroy == true && tree->destroy_f != NULL)
+            tree->destroy_f((void *)array_of_nodes[i]->data);
+
+        FREE(array_of_nodes[i]);
+    }
+
+    FREE(tree);
+}
+
+
+___inline___ static void __rbt_transplant(Rbt * tree, Rbt_node *ptr1, Rbt_node *ptr2)
+{
+    assert(tree != NULL);
+    assert(ptr1 != NULL);
+    assert(ptr2 != NULL);
+
+    if (ptr1->parent == sentinel)
+        tree->root = ptr2;
+    else if (ptr1 == ptr1->parent->left_son)
+        ptr1->parent->left_son = ptr2;
+    else
+        ptr1->parent->right_son = ptr2;
+
+    ptr2->parent = ptr1->parent;
+}
+
+
+static int __rbt_delete(Rbt * tree, const void * __restrict__ const data_key, bool destroy)
+{
+    assert(tree != NULL);
+    assert(data_key != NULL);
+    assert(tree->root != sentinel);
+
+    Rbt_node *node = __rbt_search_node(tree, data_key);
+
+    if (node == NULL)
+        return -1;
+
+    Rbt_node *temp = node;
+    char y_original_color = temp->color;
+    Rbt_node *ptr;
+
+    if (node->left_son == sentinel)
+    {
+        ptr = node->right_son;
+        __rbt_transplant(tree, node, node->right_son);
+    }
+    else if (node->right_son == sentinel)
+    {
+        ptr = node->left_son;
+        __rbt_transplant(tree, node, node->left_son);
+    }
+    else
+    {
+        temp = __rbt_min_node(node->right_son);
+        y_original_color = temp->color;
+        ptr = temp->right_son;
+
+        if (temp->parent == node)
+            ptr->parent = temp;
+        else
+        {
+            __rbt_transplant(tree, temp, temp->right_son);
+            temp->right_son = node->right_son;
+            temp->right_son->parent = temp;
+        }
+
+        __rbt_transplant(tree, node, temp);
+        temp->left_son = node->left_son;
+        temp->left_son->parent = temp;
+        temp->color = node->color;
+    }
+
+    if (y_original_color == RBT_BLACK)
+        __rbt_delete_fixup(tree, ptr);
+
+    if (destroy == true && tree->destroy_f != NULL)
+        tree->destroy_f((void *)node->data);
+
+    __rbt_node_destroy(node);
+
+    --tree->nodes;
 
     return 0;
 }
@@ -845,7 +878,7 @@ int rbt_search(const Rbt * __restrict__ const tree, const void * const data_key,
     Rbt_node *node = __rbt_search_node(tree, data_key);
 
     if (node == NULL)
-        ERROR("key does not exist in tree\n", 1);
+        return 1;
 
     __ASSIGN__(*(BYTE *)data_out, *(BYTE *)node->data, tree->size_of);
     return 0;
@@ -940,6 +973,7 @@ int rbt_get_height(const Rbt * const tree)
 
     return __rbt_rek_get_height(tree->root);
 }
+
 
 void rbt_print(const Rbt * const tree)
 {

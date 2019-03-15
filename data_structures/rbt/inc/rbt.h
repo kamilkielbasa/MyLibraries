@@ -81,18 +81,6 @@ void rbt_destroy_with_entries(Rbt *tree);
 
 
 /*
-    Destroy all RBT nodes in tree (recursive version).
-
-    PARAMS:
-    @IN tree - pointer to RBT.
-
-    RETURN:
-    %This is void function.
-*/
-void rbt_rek_destroy(Rbt *tree);
-
-
-/*
     Insert data to RBT using compare function, if data is not actually in tree.
 
     PARAMS:
@@ -250,7 +238,7 @@ int rbt_get_height(const Rbt * const tree);
 
 
 /*
-    Print data from every node in RBT.
+    Print data from every node in RBT (inorder from min).
 
     PARAMS:
     @IN tree - pointer to tree.
