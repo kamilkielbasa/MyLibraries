@@ -811,7 +811,7 @@ int rbt_delete(Rbt * __restrict__ tree, const void * __restrict__ const data_key
 }
 
 
-int rbt_delete_with_entries(Rbt * __restrict__ tree, const void * __restrict__ const data_key)
+int rbt_delete_with_entry(Rbt * __restrict__ tree, const void * __restrict__ const data_key)
 {
     return __rbt_delete(tree, data_key, true);
 }

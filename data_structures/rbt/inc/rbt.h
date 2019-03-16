@@ -123,7 +123,7 @@ int rbt_delete(Rbt * __restrict__ tree, const void * __restrict__ const data_key
     %1 if key doesn't exists in tree.
     %-1 if failure.
 */
-int rbt_delete_with_entries(Rbt * __restrict__ tree, const void * __restrict__ const data_key);
+int rbt_delete_with_entry(Rbt * __restrict__ tree, const void * __restrict__ const data_key);
 
 
 /*
