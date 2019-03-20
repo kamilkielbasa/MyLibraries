@@ -23,7 +23,7 @@ static int compare(const void* a, const void* b)
 
 static void test_create_and_delete_darray(void)
 {
-	Darray *darray = darray_create(DARRAY_SORTED, sizeof(S), (size_t)0, compare);
+	Darray *darray = darray_create(DARRAY_SORTED, sizeof(S), (size_t)0, compare, NULL);
 
 	T_ERROR(darray == NULL);
 
@@ -36,7 +36,7 @@ static void test_create_and_delete_darray(void)
 
 	darray_destroy(darray);
 
-	darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)256, compare);
+	darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)256, compare, NULL);
 
 	T_ERROR(darray == NULL);
 
@@ -52,7 +52,7 @@ static void test_create_and_delete_darray(void)
 
 static void test_insert_sorted_darray(void)
 {
-	Darray *darray = darray_create(DARRAY_SORTED, sizeof(S), (size_t)9, compare);
+	Darray *darray = darray_create(DARRAY_SORTED, sizeof(S), (size_t)9, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	const S arr[] = 
@@ -97,7 +97,7 @@ static void test_insert_sorted_darray(void)
 
 	darray_destroy(darray);
 
-	darray = darray_create(DARRAY_SORTED, sizeof(S), (size_t)0, compare);
+	darray = darray_create(DARRAY_SORTED, sizeof(S), (size_t)0, compare, NULL);
 
 	for (size_t index = 0; index < ARRAY_SIZE(arr); ++index)
 	{
@@ -120,7 +120,7 @@ static void test_insert_sorted_darray(void)
 
 static void test_insert_unsorted_darray(void)
 {
-	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)9, compare);
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)9, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	const S arr[] = 
@@ -153,7 +153,7 @@ static void test_insert_unsorted_darray(void)
 
 	darray_destroy(darray);
 
-	darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare);
+	darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare, NULL);
 
 	for (size_t index = 0; index < ARRAY_SIZE(arr); ++index)
 	{
@@ -176,7 +176,7 @@ static void test_insert_unsorted_darray(void)
 
 static void test_delete_sorted_unsorted_darray(void)
 {
-	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)9, compare);
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)9, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	const S arr[] = 
@@ -215,7 +215,7 @@ static void test_delete_sorted_unsorted_darray(void)
 
 static void test_insert_pos_unsorted_darray(void)
 {
-	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare);
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	const S arr[] = 
@@ -248,7 +248,7 @@ static void test_insert_pos_unsorted_darray(void)
 
 	darray_destroy(darray);
 
-	darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)64, compare);
+	darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)64, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	const S expt_arr[] = 
@@ -350,7 +350,7 @@ static void test_insert_pos_unsorted_darray(void)
 
 static void test_delete_pos_unsorted_darray(void)
 {
-	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare);
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	const S arr[] = 
@@ -382,7 +382,7 @@ static void test_delete_pos_unsorted_darray(void)
 
 	darray_destroy(darray);
 
-	darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)1024, compare);
+	darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)1024, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	for (size_t index = 0; index < ARRAY_SIZE(arr); ++index)
@@ -567,7 +567,7 @@ static void test_delete_pos_unsorted_darray(void)
 
 static void test_darray_search_first(void)
 {
-	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)32, compare);
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)32, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	const S arr[] = 
@@ -622,7 +622,7 @@ static void test_darray_search_first(void)
 
 static void test_darray_search_last(void)
 {
-	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)32, compare);
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)32, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	const S arr[] = 
@@ -677,7 +677,7 @@ static void test_darray_search_last(void)
 
 static void test_darray_search_min(void)
 {
-	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare);
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	const S arr[] = 
@@ -710,7 +710,7 @@ static void test_darray_search_min(void)
 
 static void test_darray_search_max(void)
 {
-	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare);
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	const S arr[] = 
@@ -743,7 +743,7 @@ static void test_darray_search_max(void)
 
 static void test_darray_sort(void)
 {
-	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare);
+	Darray *darray = darray_create(DARRAY_UNSORTED, sizeof(S), (size_t)0, compare, NULL);
 	T_ERROR(darray == NULL);
 
 	const S arr[] = 

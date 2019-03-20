@@ -1,5 +1,6 @@
-#ifndef _DARRAY_H_
-#define _DARRAY_H_
+#ifndef DARRAY_H
+#define DARRAY_H
+
 
 /*
     Dynamic array implementation
@@ -10,10 +11,11 @@
     LICENCE: GPL 3.0
 */
 
+
 #include <stddef.h> /* size_t */
 #include <sys/types.h> /* ssize_t */
+#include <common.h> /* compare_f, destroy_f */
 
-typedef int (*compare_func)(const void *, const void *);
 
 typedef enum DARRAY_TYPE
 {
@@ -21,25 +23,19 @@ typedef enum DARRAY_TYPE
     DARRAY_UNSORTED         /* type of unsorted array */
 } DARRAY_TYPE;
 
-typedef struct Darray_iterator
-{
-    void *array;
-
-    ssize_t index;          /* index in array */
-    size_t size_of;         /* size of element */
-    size_t array_length;    /* current allocated size of array */
-} Darray_iterator;
 
 typedef struct Darray 
 {
-    void *array;	    /* main array */
-    compare_func cmp_f;     /* pointer to compare function */
+    void *array;	          /* main array */
+    compare_f cmp_f;          /* pointer to compare function */
+    destructor_f destroy_f;   /* pointer to destroy function */
 
-    DARRAY_TYPE type;       /* dynamic array type (sorted / unsorted) */
-    size_t size_of;	    /* size of element */
-    size_t num_entries;     /* number of entries in array */
-    size_t size;	    /* current allocated size of array */
+    DARRAY_TYPE type;         /* dynamic array type (sorted / unsorted) */
+    size_t size_of;	          /* size of element */
+    size_t num_entries;       /* number of entries in array */
+    size_t size;	          /* current allocated size of array */
 } Darray;
+
 
 /*
     Create new instance of dynamic array.
@@ -54,7 +50,8 @@ typedef struct Darray
     %NULL if failure.
     %Pointer to dynamic array if success.
 */
-Darray *darray_create(const DARRAY_TYPE type, const size_t size_of, const size_t size, compare_func cmp_f);
+Darray *darray_create(const DARRAY_TYPE type, const size_t size_of, const size_t size, const compare_f cmp_f, const destructor_f destroy_f);
+
 
 /*
     Deallocate dynamic array with all entries.
@@ -67,6 +64,7 @@ Darray *darray_create(const DARRAY_TYPE type, const size_t size_of, const size_t
 */
 void darray_destroy(Darray *darray);
 
+
 /*
     Insert an entry at the end of the array.
 
@@ -78,7 +76,8 @@ void darray_destroy(Darray *darray);
     %0 if success.
     %negative value if failure.
 */
-int darray_insert(Darray * restrict darray, const void * restrict entry);
+int darray_insert(Darray * __restrict__ darray, const void * __restrict__ const entry);
+
 
 /*
     Delete an entry at the end of the array.
@@ -91,7 +90,8 @@ int darray_insert(Darray * restrict darray, const void * restrict entry);
     %0 if success.
     %negative value if failure.
 */
-int darray_delete(Darray * restrict darray, void * restrict val_out);
+int darray_delete(Darray * __restrict__ darray, void * __restrict__ val_out);
+
 
 /*
     Insert an entry to array in selected pos (array[pos]).
@@ -105,7 +105,8 @@ int darray_delete(Darray * restrict darray, void * restrict val_out);
     %0 if success.
     %negative value if failure.
 */
-int darray_insert_pos(Darray * restrict darray, const void * restrict entry, const size_t pos);
+int darray_insert_pos(Darray * __restrict__ darray, const void * __restrict__ const entry, const size_t pos);
+
 
 /*
     Delete an element from array selected as pos (array[pos]).
@@ -119,7 +120,8 @@ int darray_insert_pos(Darray * restrict darray, const void * restrict entry, con
     %0 if success.
     %negative value if failure.
 */
-int darray_delete_pos(Darray * restrict darray, void * restrict val_out, const size_t pos);
+int darray_delete_pos(Darray * __restrict__ darray, void * __restrict__ val_out, const size_t pos);
+
 
 /*
     Get data from array[pos].
@@ -133,7 +135,8 @@ int darray_delete_pos(Darray * restrict darray, void * restrict val_out, const s
     %0 if success.
     %negative value if failure.
 */
-int darray_get_data(const Darray * const restrict darray, void * restrict val_out, const size_t pos);
+int darray_get_data(const Darray * __restrict__ const darray, void * __restrict__ val_out, const size_t pos);
+
 
 /*
     Find first key from darray using compare function.
@@ -147,7 +150,8 @@ int darray_get_data(const Darray * const restrict darray, void * restrict val_ou
     %index in darray if success.
     %-1 if failure.
 */
-ssize_t darray_search_first(const Darray * const restrict darray, const void * const restrict key, void * restrict val_out);
+ssize_t darray_search_first(const Darray * __restrict__ const darray, const void * __restrict__ key, void * __restrict__ val_out);
+
 
 /*
     Find last key from darray using compare function.
@@ -161,7 +165,8 @@ ssize_t darray_search_first(const Darray * const restrict darray, const void * c
     %index in darray if success.
     %-1 if failure.
 */
-ssize_t darray_search_last(const Darray * const restrict darray, const void * const restrict key, void * restrict val_out);
+ssize_t darray_search_last(const Darray * __restrict__ const darray, const void * __restrict__ const key, void * __restrict__ val_out);
+
 
 /*
     Find minimum value from darray.
@@ -174,7 +179,8 @@ ssize_t darray_search_last(const Darray * const restrict darray, const void * co
     %index in darray if succes and val_out != NULL.
     %-1 if failure and val_out == NULL.
 */
-ssize_t darray_search_min(const Darray * const restrict darray, void * restrict val_out);
+ssize_t darray_search_min(const Darray * __restrict__ const darray, void * __restrict__ val_out);
+
 
 /*
     Find maximum value from darray.
@@ -187,7 +193,8 @@ ssize_t darray_search_min(const Darray * const restrict darray, void * restrict 
     %index in darray if succes and val_out != NULL.
     %-1 if failure and val_out == NULL.
 */
-ssize_t darray_search_max(const Darray * const restrict darray, void * restrict val_out);
+ssize_t darray_search_max(const Darray * __restrict__ const darray, void * __restrict__ val_out);
+
 
 /*
     Sorts darray.
@@ -201,6 +208,7 @@ ssize_t darray_search_max(const Darray * const restrict darray, void * restrict 
 */
 int darray_sort(Darray *darray);
 
+
 /*
     Get size of array.
 
@@ -212,6 +220,20 @@ int darray_sort(Darray *darray);
     %negative value if failure.
 */
 ssize_t darray_get_size(const Darray * const darray);
+
+
+/*
+    Get size of each data.
+
+    PARAMS:
+    @IN darray - pointer to darray.
+
+    RETURN:
+    %number of entries if success.
+    %-1 if failure.
+*/
+ssize_t darray_get_data_size(const Darray * const darray);
+
 
 /*
     Get number of entries.
@@ -225,6 +247,7 @@ ssize_t darray_get_size(const Darray * const darray);
 */
 ssize_t darray_get_num_entries(const Darray * const darray);
 
+
 /*
     Get pointer to darray array.
 
@@ -237,4 +260,5 @@ ssize_t darray_get_num_entries(const Darray * const darray);
 */
 void *darray_get_array(const Darray * const darray);
 
-#endif /* _DARRAY_H_ */
+
+#endif /* DARRAY_H */

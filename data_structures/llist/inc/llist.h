@@ -1,5 +1,5 @@
-#ifndef _LIST1D_H_
-#define _LIST1D_H_
+#ifndef LLIST_H
+#define LLIST_H
 
 /*
     Doubly linked list implementation
@@ -12,27 +12,29 @@
 
 #include <stddef.h> /* size_t */
 #include <sys/types.h> /* ssize_t */
+#include <common.h> /* compare_f */
 
-typedef int (*compare_func)(const void *, const void *);
 
 typedef struct List1d_node
 {
-    struct List1d_node *next; /* pointer to next node */
-    size_t size_of;         /* size of node */
+    struct List1d_node *next;   /* pointer to next node */
+    size_t size_of;             /* size of node */
     
-    char data[];            /* placeholder for data */
+    char data[];                /* placeholder for data */
 } List1d_node;
+
 
 typedef struct List1d
 {
-    List1d_node *head;        /* pointer to head */
-    List1d_node *tail;        /* pointer to tail */
+    List1d_node *head;          /* pointer to head */
+    List1d_node *tail;          /* pointer to tail */
 
-    compare_func cmp_f;     /* compare function */
+    compare_f cmp_f;            /* compare function */
 
-    size_t size;            /* num of nodes in list */
-    size_t size_of;         /* size of element */
+    size_t size;                /* num of nodes in list */
+    size_t size_of;             /* size of element */
 } List1d;
+
 
 /*
     Create new instance of list.
@@ -45,7 +47,8 @@ typedef struct List1d
     %NULL if failure.
     %Pointer to list if success.
 */
-List1d *list1d_create(const size_t size_of, compare_func cmp_f);
+List1d *list1d_create(const size_t size_of, compare_f cmp_f);
+
 
 /*
     Destroy existed instance of list.
@@ -57,6 +60,7 @@ List1d *list1d_create(const size_t size_of, compare_func cmp_f);
     %This is void function.
 */
 void list1d_destroy(List1d *list);
+
 
 /*
     Create new instance of list.
@@ -71,6 +75,7 @@ void list1d_destroy(List1d *list);
 */
 int list1d_insert(List1d * __restrict__ const list, const void * __restrict__ const entry);
 
+
 /*
     Delete the first found entry which compare(list->entry, entry) == 0.
 
@@ -84,6 +89,7 @@ int list1d_insert(List1d * __restrict__ const list, const void * __restrict__ co
 */
 int list1d_delete(List1d * __restrict__ const list, const void * __restrict__ const entry);
 
+
 /*
     Delete the all entries which compare(list->entry, entry) == 0.
 
@@ -96,6 +102,7 @@ int list1d_delete(List1d * __restrict__ const list, const void * __restrict__ co
     %negative value if failure.
 */
 int list1d_delete_all(List1d * __restrict__ const list, const void * __restrict__ const entry);
+
 
 /*
     Search for entry which compare(list->entry, val) == 0.
@@ -111,6 +118,7 @@ int list1d_delete_all(List1d * __restrict__ const list, const void * __restrict_
 */
 int list1d_search(const List1d * __restrict__ const list, const void *val, void *entry);
 
+
 /*
     Delete the all entries which compare(list->entry, entry) == 0.
 
@@ -125,6 +133,7 @@ int list1d_search(const List1d * __restrict__ const list, const void *val, void 
 */
 int list1d_to_array(const List1d * __restrict__ const list, void * __restrict__ array, size_t * __restrict__ size);
 
+
 /*
     Get number of entries in list.
 
@@ -136,6 +145,7 @@ int list1d_to_array(const List1d * __restrict__ const list, void * __restrict__ 
     %number of entries.
 */
 ssize_t list1d_get_num_entries(const List1d * const list);
+
 
 /*
     Get size of data list.
@@ -149,4 +159,5 @@ ssize_t list1d_get_num_entries(const List1d * const list);
 */
 ssize_t list1d_get_data_size(const List1d * const list);
 
-#endif /* _LIST1D_H_ */
+
+#endif /* LLIST_H */

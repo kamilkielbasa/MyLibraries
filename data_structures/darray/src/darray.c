@@ -3,7 +3,9 @@
 #include <stdlib.h> /* malloc, free, qsort */
 #include <string.h> /* memcpy, memmove */
 
+
 #define RATIO ((size_t)2)
+
 
 /*
     Calculate offset.
@@ -19,6 +21,7 @@ static __inline__ void *__calc_offset(const void * const src, const size_t offse
 {
 	return (void *)((char *)src + offset);
 }
+
 
 /*
     Realloc array in dynamic array when inserted new element.
@@ -52,6 +55,7 @@ static void __darray_resize_insert(Darray *darray)
 	}
 }
 
+
 /*
     Realloc array in dynamic array when deleted element.
 
@@ -80,6 +84,7 @@ static void __darray_resize_delete(Darray *darray)
 		darray->size /= RATIO;
 	}
 }
+
 
 /*
     Insert new element to the sorted dynamic array.
@@ -123,6 +128,7 @@ static int __darray_sorted_insert(Darray * restrict darray, const void * restric
     return 0;
 }
 
+
 /*
     Insert new element to the unsorted dynamic array.
 
@@ -147,6 +153,7 @@ static int __darray_unsorted_insert(Darray * restrict darray, const void * restr
 
     return 0;
 }
+
 
 /*
     Find first key from darray using compare function.
@@ -173,6 +180,7 @@ static ssize_t __darray_search_first(const Darray * const restrict darray, const
 	return -1;
 }
 
+
 /*
     Find last key from darray using compare function.
 
@@ -198,7 +206,8 @@ static ssize_t __darray_search_last(const Darray * const restrict darray, const 
 	return -1;
 }
 
-Darray *darray_create(const DARRAY_TYPE type, const size_t size_of, const size_t size, compare_func cmp_f)
+
+Darray *darray_create(const DARRAY_TYPE type, const size_t size_of, const size_t size, const compare_f cmp_f, const destructor_f destroy_f)
 {
 	if (size_of < 1)
 		ERROR("size_of < 1\n", NULL);
@@ -225,6 +234,7 @@ Darray *darray_create(const DARRAY_TYPE type, const size_t size_of, const size_t
 	}
 	
 	darray->cmp_f = cmp_f;
+    darray->destroy_f = destroy_f;
 	darray->type = type;
 	darray->size_of = size_of;
 	darray->num_entries = 0;
@@ -232,6 +242,7 @@ Darray *darray_create(const DARRAY_TYPE type, const size_t size_of, const size_t
 
 	return darray;
 }
+
 
 void darray_destroy(Darray *darray)
 {
@@ -244,6 +255,7 @@ void darray_destroy(Darray *darray)
 	FREE(darray);
 }
 
+
 int darray_insert(Darray * restrict darray, const void * restrict entry)
 {
 	if (darray == NULL)
@@ -251,6 +263,7 @@ int darray_insert(Darray * restrict darray, const void * restrict entry)
 
 	return (darray->type == DARRAY_SORTED) ? __darray_sorted_insert(darray, entry) : __darray_unsorted_insert(darray, entry);
 }
+
 
 int darray_delete(Darray * restrict darray, void * restrict val_out)
 {
@@ -268,6 +281,7 @@ int darray_delete(Darray * restrict darray, void * restrict val_out)
 
 	return 0;
 }
+
 
 int darray_insert_pos(Darray * restrict darray, const void * restrict entry, const size_t pos)
 {
@@ -291,6 +305,7 @@ int darray_insert_pos(Darray * restrict darray, const void * restrict entry, con
 
     return 0;
 }
+
 
 int darray_delete_pos(Darray * restrict darray, void * restrict val_out, const size_t pos)
 {
@@ -320,6 +335,7 @@ int darray_delete_pos(Darray * restrict darray, void * restrict val_out, const s
     return 0;
 }
 
+
 int darray_get_data(const Darray * const restrict darray, void * restrict val_out, const size_t pos)
 {
 	if (darray == NULL)
@@ -340,6 +356,7 @@ int darray_get_data(const Darray * const restrict darray, void * restrict val_ou
 	return 0;
 }
 
+
 ssize_t darray_search_first(const Darray * const restrict darray, const void * const restrict key, void * restrict val_out)
 {
 	if (darray == NULL || darray->array == NULL)
@@ -359,6 +376,7 @@ ssize_t darray_search_first(const Darray * const restrict darray, const void * c
 	return index;
 }
 
+
 ssize_t darray_search_last(const Darray * const restrict darray, const void * const restrict key, void * restrict val_out)
 {
 	if (darray == NULL || darray->array == NULL)
@@ -377,6 +395,7 @@ ssize_t darray_search_last(const Darray * const restrict darray, const void * co
 
 	return index;
 }
+
 
 ssize_t darray_search_min(const Darray * const restrict darray, void * restrict val_out)
 {
@@ -408,6 +427,7 @@ ssize_t darray_search_min(const Darray * const restrict darray, void * restrict 
 	return index;
 }
 
+
 ssize_t darray_search_max(const Darray * const restrict darray, void * restrict val_out)
 {
 	if (darray == NULL || darray->array == NULL)
@@ -438,6 +458,7 @@ ssize_t darray_search_max(const Darray * const restrict darray, void * restrict 
 	return index;
 }
 
+
 int darray_sort(Darray *darray)
 {
 	if (darray == NULL || darray->array == NULL)
@@ -450,6 +471,7 @@ int darray_sort(Darray *darray)
 	return 0;
 }
 
+
 ssize_t darray_get_size(const Darray * const darray)
 {
 	if (darray == NULL)
@@ -458,6 +480,16 @@ ssize_t darray_get_size(const Darray * const darray)
 	return (ssize_t)darray->size;
 }
 
+
+ssize_t darray_get_data_size(const Darray * const darray)
+{
+    if (darray == NULL)
+        ERROR("darray == NULL\n", -1);
+
+    return (ssize_t)darray->size_of;
+}
+
+
 ssize_t darray_get_num_entries(const Darray * const darray)
 {
 	if (darray == NULL)
@@ -465,6 +497,7 @@ ssize_t darray_get_num_entries(const Darray * const darray)
 
 	return (ssize_t)darray->num_entries;
 }
+
 
 void *darray_get_array(const Darray * const darray)
 {
