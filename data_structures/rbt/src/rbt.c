@@ -993,7 +993,7 @@ void rbt_print(const Rbt * const tree)
 
     for (size_t i = 0; i < tree->nodes; ++i)
     {
-        tree->print_f((void *)node);
+        tree->print_f((void *)node->data);
         node = __rbt_successor(node);
     }
 }
