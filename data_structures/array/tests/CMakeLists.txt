@@ -1,4 +1,4 @@
-project(array)
+project(array_tests)
 
 set(ARRAY_TESTS_SOURCE_FILES
     ${CMAKE_CURRENT_LIST_DIR}/array_tests.c
