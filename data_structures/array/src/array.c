@@ -3,6 +3,55 @@
 #include <string.h>
 
 
+/*
+    Insert @data in @pos in @array.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN pos - position to insert.
+    @IN data - pointer to data to insert.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+static int __array_insert_pos(void * __restrict__ array, const size_t len, const size_t size_of, const size_t pos, const void * __restrict__ const data);
+
+
+static int __array_insert_pos(void * __restrict__ array, const size_t len, const size_t size_of, const size_t pos, const void * __restrict__ const data)
+{
+    if (array == NULL)
+        ERROR("array == NULL\n", -1);
+
+    if (len == 0)
+        ERROR("len == 0\n", -1);
+
+    if (size_of == 0)
+        ERROR("size_of == 0\n", -1);
+
+    if (pos > len)
+        ERROR("pos > len\n", -1);
+
+    if (data == NULL)
+        ERROR("data == NULL\n", -1);
+
+    BYTE *arr = (BYTE *)array;
+
+    void *dst =  (void *)(arr + ((pos + 1) * size_of));
+    const void *src = (void *)(arr + (pos * size_of));
+    size_t to_move = (len - pos - 1) * size_of;
+
+    if (memmove(dst, src, to_move) == NULL)
+        ERROR("memmove error\n", -1);
+
+    __ASSIGN__(arr[pos * size_of], *(BYTE *)data, size_of);
+
+    return 0;
+}
+
+
 void *array_create(const size_t len, const size_t size_of)
 {
     /* preconditions */
@@ -130,4 +179,22 @@ void array_zeros(void *array, const size_t len, const size_t size_of)
         VERROR("size_of == 0\n");
 
     (void)memset(array, 0, len * size_of);
+}
+
+
+int array_unsorted_insert_first(void * __restrict__ array, const size_t len, const size_t size_of, const void * __restrict__ const data)
+{
+    return __array_insert_pos(array, len, size_of, 0, data);
+}
+
+
+int array_unsorted_insert_last(void * __restrict__ array, const size_t len, const size_t size_of, const void * __restrict__ const data)
+{
+    return __array_insert_pos(array, len, size_of, len - 1, data);
+}
+
+
+int array_unsorted_insert_pos(void * __restrict__ array, const size_t len, const size_t size_of, const size_t pos, const void * __restrict__ const data)
+{
+    return __array_insert_pos(array, len, size_of, pos, data);
 }

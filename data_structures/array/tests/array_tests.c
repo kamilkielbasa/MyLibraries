@@ -220,14 +220,107 @@ static void test_array_zeros(void)
 }
 
 
+#define TEST_ARRAY_UNSORTED_INSERT_FIRST(type, len) \
+    do { \
+        type *array = (type *)array_create(len, sizeof(type)); \
+        T_ERROR(array == NULL); \
+        for (size_t i = 0; i < len; ++i) \
+        { \
+            type val = (type)(i + 1); \
+            T_EXPECT(array_unsorted_insert_first(array, len, sizeof(type), &val), 0); \
+        } \
+        for (size_t i = 0; i < len; ++i) \
+            T_ASSERT(array[i], (type)(len - i)); \
+        array_destroy(array); \
+    } while (0)
+
+
+static void test_array_unsorted_insert_first(void)
+{
+    const size_t len = 1000;
+
+    TEST_ARRAY_UNSORTED_INSERT_FIRST(int8_t, len * 1);
+    TEST_ARRAY_UNSORTED_INSERT_FIRST(int16_t, len * 2);
+    TEST_ARRAY_UNSORTED_INSERT_FIRST(int32_t, len * 3);
+    TEST_ARRAY_UNSORTED_INSERT_FIRST(int64_t, len * 4);
+    TEST_ARRAY_UNSORTED_INSERT_FIRST(char, len * 5);
+    TEST_ARRAY_UNSORTED_INSERT_FIRST(float, len * 6);
+    TEST_ARRAY_UNSORTED_INSERT_FIRST(double, len * 7);
+    TEST_ARRAY_UNSORTED_INSERT_FIRST(size_t, len * 8);
+}
+
+
+#define TEST_ARRAY_UNSORTED_INSERT_LAST(type, len) \
+    do { \
+        type *array = (type *)array_create(len, sizeof(type)); \
+        T_ERROR(array == NULL); \
+        for (size_t i = 0; i < len; ++i) \
+        { \
+            type val = (type)(len - i); \
+            T_EXPECT(array_unsorted_insert_last(array, len - i, sizeof(type), &val), 0); \
+        } \
+        for (size_t i = 0; i < len; ++i) \
+            T_ASSERT(array[i], (type)(i + 1)); \
+        array_destroy(array); \
+    } while (0)
+
+
+static void test_array_unsorted_insert_last(void)
+{
+    const size_t len = 1000;
+
+    TEST_ARRAY_UNSORTED_INSERT_LAST(int8_t, len);
+    TEST_ARRAY_UNSORTED_INSERT_LAST(int16_t, len * 2);
+    TEST_ARRAY_UNSORTED_INSERT_LAST(int32_t, len * 3);
+    TEST_ARRAY_UNSORTED_INSERT_LAST(int64_t, len * 4);
+    TEST_ARRAY_UNSORTED_INSERT_LAST(char, len * 5);
+    TEST_ARRAY_UNSORTED_INSERT_LAST(float, len * 6);
+    TEST_ARRAY_UNSORTED_INSERT_LAST(double, len * 7);
+    TEST_ARRAY_UNSORTED_INSERT_LAST(size_t, len * 8);
+}
+
+
+#define TEST_ARRAY_UNSORTED_INSERT_POS(type, len) \
+    do { \
+        type *array = (type *)array_create(len, sizeof(type)); \
+        T_ERROR(array == NULL); \
+        for (size_t i = 0; i < len; ++i) \
+        { \
+            type val = (type)(i + 1); \
+            T_EXPECT(array_unsorted_insert_pos(array, len, sizeof(type), i, &val), 0); \
+        } \
+        for (size_t i = 0; i < len; ++i) \
+            T_ASSERT(array[i], (type)(i + 1)); \
+        array_destroy(array); \
+    } while (0)
+
+
+static void test_array_unsorted_insert_pos(void)
+{
+    const size_t len = 1000;
+
+    TEST_ARRAY_UNSORTED_INSERT_POS(int8_t, len * 1);
+    TEST_ARRAY_UNSORTED_INSERT_POS(int16_t, len * 2);
+    TEST_ARRAY_UNSORTED_INSERT_POS(int32_t, len * 3);
+    TEST_ARRAY_UNSORTED_INSERT_POS(int64_t, len * 4);
+    TEST_ARRAY_UNSORTED_INSERT_POS(char, len * 5);
+    TEST_ARRAY_UNSORTED_INSERT_POS(float, len * 6);
+    TEST_ARRAY_UNSORTED_INSERT_POS(double, len * 7);
+    TEST_ARRAY_UNSORTED_INSERT_POS(size_t, len * 8);
+}
+
+
 int main(void)
 {
-    TEST_INIT("ARRAY TESTING\n");
+    TEST_INIT("ARRAY TESTING");
     TEST(test_array_create());
     TEST(test_destroy_with_entries());
     TEST(test_array_copy());
     TEST(test_array_clone());
     TEST(test_array_move());
     TEST(test_array_zeros());
+    TEST(test_array_unsorted_insert_first());
+    TEST(test_array_unsorted_insert_last());
+    TEST(test_array_unsorted_insert_pos());
     TEST_SUMMARY();
 }

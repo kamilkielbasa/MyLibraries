@@ -107,4 +107,53 @@ void array_move(void * dst, void * src, const size_t len, const size_t size_of);
 void array_zeros(void *array, const size_t len, const size_t size_of);
 
 
+/*
+    Insert data in first pos.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN data - pointer to data.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+int array_unsorted_insert_first(void * __restrict__ array, const size_t len, const size_t size_of, const void * __restrict__ const data);
+
+
+/*
+    Insert data in last pos.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN data - pointer to data.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+int array_unsorted_insert_last(void * __restrict__ array, const size_t len, const size_t size_of, const void * __restrict__ const data);
+
+
+/*
+    Insert data in @pos.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN pos - position to insert.
+    @IN data - pointer to data.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+int array_unsorted_insert_pos(void * __restrict__ array, const size_t len, const size_t size_of, const size_t pos, const void * __restrict__ const data);
+
+
 #endif /* ARRAY_H */
