@@ -156,4 +156,102 @@ int array_unsorted_insert_last(void * __restrict__ array, const size_t len, cons
 int array_unsorted_insert_pos(void * __restrict__ array, const size_t len, const size_t size_of, const size_t pos, const void * __restrict__ const data);
 
 
+/*
+    Delete first element from array.
+    At first entry will be 2nd entry etc. Last will be empty.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+int array_delete_first(void *array, const size_t len, const size_t size_of);
+
+
+/*
+    Delete last element from array.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+int array_delete_last(void *array, const size_t len, const size_t size_of); 
+
+
+/*
+    Delete entry at @pos from @array.
+    At @pos will be (@pos + 1)th entry etc.
+    Last will be empty.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN pos - position in array.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+int array_delete_pos(void *array, const size_t len, const size_t size_of, const size_t pos);
+
+
+/*
+    Delete first element from array. (call destructor)
+    At first entry will be 2nd entry etc. Last will be empty.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+int array_delete_first_with_entry(void *array, const size_t len, const size_t size_of, const destructor_f destroy_f);
+
+
+/*
+    Delete last element from array. (call destructor)
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+int array_delete_last_with_entry(void *array, const size_t len, const size_t size_of, const destructor_f destroy_f);
+
+
+/*
+    Delete entry at @pos from @array. (call destructor)
+    At @pos will be (@pos + 1)th entry etc.
+    Last will be empty.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN pos - position in array.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+int array_delete_pos_with_entry(void *array, const size_t len, const size_t size_of, const size_t pos, const destructor_f destroy_f);
+
+
 #endif /* ARRAY_H */
