@@ -1,5 +1,5 @@
 add_subdirectory(array)
 add_subdirectory(darray)
 add_subdirectory(stack)
-add_subdirectory(llist)
+add_subdirectory(list)
 add_subdirectory(rbt)
