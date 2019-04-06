@@ -310,6 +310,97 @@ static void test_array_unsorted_insert_pos(void)
 }
 
 
+static void test_array_delete(void)
+{
+    const size_t len = 10;
+
+    int64_t arr[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    int64_t ext_arr[] = { 3, 4, 6, 7, 8, 10, 10, 10, 10, 10 };
+
+    T_EXPECT(array_delete_first(arr, ARRAY_SIZE(arr), sizeof(*arr)), 0);
+
+    for (size_t i = 0; i < len - 1; ++i)
+        T_ASSERT(arr[i], (int64_t)(i + 2));
+
+    T_ASSERT(arr[ARRAY_SIZE(arr) - 1], 10);
+
+    T_EXPECT(array_delete_pos(arr, len, sizeof(*arr), 3), 0);
+    T_EXPECT(array_delete_pos(arr, len, sizeof(*arr), 0), 0);
+    T_EXPECT(array_delete_pos(arr, len, sizeof(*arr), 5), 0);
+
+    for (size_t i = 0; i < len; ++i)
+        T_ASSERT(arr[i], ext_arr[i]);
+
+    T_EXPECT(array_delete_last(arr, len >> 1, sizeof(*arr)), 0);
+
+    for (size_t i = 0; i < len; ++i)
+        T_ASSERT(arr[i], ext_arr[i]);
+}
+
+
+static void test_array_delete_all(void)
+{
+    int64_t arr1[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    int64_t arr2[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    int64_t arr3[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    int64_t expt_arr[] = { 2, 4, 6, 8, 10, 10, 10, 10, 10, 10 };
+
+    for (size_t i = 0; i < ARRAY_SIZE(arr1); ++i)
+        T_EXPECT(array_delete_first(arr1, ARRAY_SIZE(arr1), sizeof(*arr1)), 0);
+
+    for (size_t i = 0; i < ARRAY_SIZE(arr1); ++i)
+        T_ASSERT(arr1[i], (int64_t)10);
+
+    for (size_t i = 0; i < ARRAY_SIZE(arr2); ++i)
+        T_EXPECT(array_delete_last(arr2, ARRAY_SIZE(arr2), sizeof(*arr2)), 0);
+
+    for (size_t i = 0; i < ARRAY_SIZE(arr2); ++i)
+        T_ASSERT(arr2[i], (int64_t)(i + 1));
+
+    for (size_t i = 0; i < ARRAY_SIZE(arr3); ++i)
+        T_EXPECT(array_delete_pos(arr3, ARRAY_SIZE(arr3), sizeof(*arr3), i), 0);
+        
+    for (size_t i = 0; i < ARRAY_SIZE(arr3); ++i)
+        T_ASSERT(arr3[i], expt_arr[i]);
+}
+
+
+static void test_array_delete_with_entry(void)
+{
+    int64_t arr[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    int64_t expt_arr[] = { 2, 3, 4, 5, 10, 10, 10, 10, 10, 10 };
+
+    MyStruct *ms[ARRAY_SIZE(arr)];
+
+    for (size_t i = 0; i < ARRAY_SIZE(arr); ++i)
+        ms[i] = my_struct_create(arr[i]);
+
+    T_EXPECT(array_delete_first_with_entry(ms, ARRAY_SIZE(ms), sizeof(*ms), my_struct_destroy), 0);
+
+    /* 2, 3, 4, 5, 6, 7, 8, 9, 10, 10*/
+    for (size_t i = 0; i < ARRAY_SIZE(arr) - 1; ++i)
+        T_ASSERT(ms[i]->key, (int64_t)(i + 2));
+
+    T_ASSERT(arr[ARRAY_SIZE(arr) - 1], 10);
+
+    T_EXPECT(array_delete_pos_with_entry(ms, ARRAY_SIZE(ms) - 1, sizeof(*ms), 7, my_struct_destroy), 0);
+    T_EXPECT(array_delete_pos_with_entry(ms, ARRAY_SIZE(ms) - 2, sizeof(*ms), 4, my_struct_destroy), 0);
+
+    T_EXPECT(array_delete_last_with_entry(ms, ARRAY_SIZE(ms) - 3, sizeof(*ms), my_struct_destroy), 0);
+
+    T_EXPECT(array_delete_pos_with_entry(ms, ARRAY_SIZE(ms) - 4, sizeof(*ms), 5, my_struct_destroy), 0);
+    T_EXPECT(array_delete_pos_with_entry(ms, ARRAY_SIZE(ms) - 5, sizeof(*ms), 4, my_struct_destroy), 0);
+
+    for (size_t i = 0; i < ARRAY_SIZE(ms) - 6; ++i)
+        T_ASSERT(ms[i]->key, expt_arr[i]);
+
+    for (size_t i = 0; i < ARRAY_SIZE(ms) - 6; ++i)
+    {
+        FREE(ms[i]);
+    }
+}
+
+
 int main(void)
 {
     TEST_INIT("ARRAY TESTING");
@@ -322,5 +413,8 @@ int main(void)
     TEST(test_array_unsorted_insert_first());
     TEST(test_array_unsorted_insert_last());
     TEST(test_array_unsorted_insert_pos());
+    TEST(test_array_delete());
+    TEST(test_array_delete_all());
+    TEST(test_array_delete_with_entry());
     TEST_SUMMARY();
 }
