@@ -43,6 +43,32 @@ static MyStruct *my_struct_create(int64_t key)
 }
 
 
+static int my_compare_int64_t(const void *a, const void *b)
+{
+    assert(a != NULL && b != NULL);
+
+    const int64_t *ia = (const int64_t *)a;
+    const int64_t *ib = (const int64_t *)b;
+
+    if (*ia > *ib) return 1;
+    if (*ia == *ib) return 0;
+    return -1;
+}
+
+
+static int my_compare_double(const void *a, const void *b)
+{
+    assert(a != NULL && b != NULL);
+
+    const double *ia = (const double *)a;
+    const double *ib = (const double *)b;
+
+    if (*ia > *ib) return 1;
+    if (*ia == *ib) return 0;
+    return -1;
+}
+
+
 #define TEST_ARRAY_CREATE(type, len) \
     do { \
         type *ptr = (type *)array_create(len, sizeof(type)); \
@@ -401,6 +427,125 @@ static void test_array_delete_with_entry(void)
 }
 
 
+static void test_array_lower_bound(void)
+{
+    int64_t arr1[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+    double arr2[] = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+
+    int64_t val1;
+    double val2;
+
+    val1 = (int64_t)0;
+    T_EXPECT(array_lower_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)0);
+
+    val1 = (int64_t)1;
+    T_EXPECT(array_lower_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)0);
+
+    val1 = (int64_t)2;
+    T_EXPECT(array_lower_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)0);
+
+    val1 = (int64_t)6;
+    T_EXPECT(array_lower_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)3);
+
+    val1 = (int64_t)13;
+    T_EXPECT(array_lower_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)5);
+
+    val1 = (int64_t)18;
+    T_EXPECT(array_lower_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)7);
+
+    val1 = (int64_t)25;
+    T_EXPECT(array_lower_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)9);
+
+    val2 = -0.1;
+    T_EXPECT(array_lower_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)0);
+
+    val2 = 0.0;
+    T_EXPECT(array_lower_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)0);
+
+    val2 = 0.05;
+    T_EXPECT(array_lower_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)0);
+
+    val2 = 0.11;
+    T_EXPECT(array_lower_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)1);
+
+    val2 = 0.25;
+    T_EXPECT(array_lower_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)2);
+
+    val2 = 0.49;
+    T_EXPECT(array_lower_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)4);
+
+    val2 = 0.81;
+    T_EXPECT(array_lower_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)8);
+
+    val2 = 0.89;
+    T_EXPECT(array_lower_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)8);
+
+    val2 = 1.21;
+    T_EXPECT(array_lower_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)9);
+}
+
+
+static void test_array_upper_bound(void)
+{
+    int64_t arr1[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+    double arr2[] = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+
+    int64_t val1;
+    double val2;
+
+    val1 = (int64_t)0;
+    T_EXPECT(array_upper_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)0);
+
+    val1 = (int64_t)1;
+    T_EXPECT(array_upper_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)0);
+
+    val1 = (int64_t)2;
+    T_EXPECT(array_upper_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)1);
+
+    val1 = (int64_t)6;
+    T_EXPECT(array_upper_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)3);
+
+    val1 = (int64_t)13;
+    T_EXPECT(array_upper_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)6);
+
+    val1 = (int64_t)18;
+    T_EXPECT(array_upper_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)7);
+
+    val1 = (int64_t)23;
+    T_EXPECT(array_upper_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)9);
+
+    val1 = (int64_t)25;
+    T_EXPECT(array_upper_bound((const void * const)&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), (const void * const)&val1, my_compare_int64_t), (ssize_t)9);
+
+    val2 = -0.1;
+    T_EXPECT(array_upper_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)0);
+
+    val2 = 0.0;
+    T_EXPECT(array_upper_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)0);
+
+    val2 = 0.1;
+    T_EXPECT(array_upper_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)1);
+
+    val2 = 0.11;
+    T_EXPECT(array_upper_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)1);
+
+    val2 = 0.25;
+    T_EXPECT(array_upper_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)2);
+
+    val2 = 0.5;
+    T_EXPECT(array_upper_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)5);
+
+    val2 = 0.81;
+    T_EXPECT(array_upper_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)8);
+
+    val2 = 0.89;
+    T_EXPECT(array_upper_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)8);
+
+    val2 = 1.21;
+    T_EXPECT(array_upper_bound((const void * const)&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), (const void * const)&val2, my_compare_double), (ssize_t)9);
+}
+
+
 int main(void)
 {
     TEST_INIT("ARRAY TESTING");
@@ -416,5 +561,7 @@ int main(void)
     TEST(test_array_delete());
     TEST(test_array_delete_all());
     TEST(test_array_delete_with_entry());
+    TEST(test_array_lower_bound());
+    TEST(test_array_upper_bound());
     TEST_SUMMARY();
 }

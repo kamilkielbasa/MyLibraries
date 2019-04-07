@@ -282,3 +282,75 @@ int array_delete_pos_with_entry(void *array, const size_t len, const size_t size
 {
     return __array_delete_pos(array, len, size_of, pos, destroy_f);
 }
+
+
+ssize_t array_lower_bound(const void * const array, const size_t len, const size_t size_of, const void * const data, const compare_f cmp_f)
+{
+    if (array == NULL)
+        ERROR("array == NULL\n", -1);
+
+    if (len == 0)
+        ERROR("len == 0\n", -1);
+
+    if (size_of == 0)
+        ERROR("size_of == 0\n", -1);
+
+    if (data == NULL)
+        ERROR("data == NULL\n", -1);
+
+    if (cmp_f == NULL)
+        ERROR("cmp_f == NULL\n", -1);
+
+    const BYTE * const arr = (const BYTE * const)array;
+
+    size_t offset_left = 0;
+    size_t offset_right = len * size_of;
+    
+    while (offset_left < offset_right)
+    {
+        size_t offset_middle = ((offset_left / size_of + offset_right / size_of) / 2) * size_of;
+
+        if (cmp_f(data, &arr[offset_middle]) <= 0)
+            offset_right = offset_middle;
+        else
+            offset_left = offset_middle + size_of;
+    }
+
+    return (ssize_t)(offset_left / size_of);
+}
+
+
+ssize_t array_upper_bound(const void * const array, const size_t len, const size_t size_of, const void * const data, const compare_f cmp_f)
+{
+    if (array == NULL)
+        ERROR("array == NULL\n", -1);
+
+    if (len == 0)
+        ERROR("len == 0\n", -1);
+
+    if (size_of == 0)
+        ERROR("size_of == 0\n", -1);
+
+    if (data == NULL)
+        ERROR("data == NULL\n", -1);
+
+    if (cmp_f == NULL)
+        ERROR("cmp_f == NULL\n", -1);
+
+    const BYTE * const arr = (const BYTE * const)array;
+
+    size_t offset_left = 0;
+    size_t offset_right = len * size_of;
+    
+    while (offset_left < offset_right)
+    {
+        size_t offset_middle = ((offset_left / size_of + offset_right / size_of) / 2) * size_of;
+
+        if (cmp_f(data, &arr[offset_middle]) >= 0)
+            offset_left = offset_middle + size_of;
+        else
+            offset_right = offset_middle;
+    }
+
+    return (ssize_t)(offset_left / size_of); 
+}
