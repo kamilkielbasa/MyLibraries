@@ -308,7 +308,7 @@ ssize_t array_upper_bound(const void * const array, const size_t len, const size
 
 
 /*
-    Sort array.
+    Sort array (quicksort).
 
     PARAMS:
     @IN array - pointer to array.
@@ -317,10 +317,116 @@ ssize_t array_upper_bound(const void * const array, const size_t len, const size
     @IN cmp_f - pointer to compare function.
 
     RETURN:
-    %-1 if failure.
-    %Index of upper bound if success.
+    %0 if success.
+    %Negative value if failure.
 */
 int array_sort(void * __restrict__ array, const size_t len, const size_t size_of, const compare_f cmp_f);
+
+
+/*
+    Get min entry from array.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN cmp_f - pointer to compare function.
+    @OUT min - pointer to min value.
+
+    RETURN:
+    %-1 if failure.
+    %Index of min entry if success.
+*/
+ssize_t array_min(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, void * __restrict__ min);
+
+
+/*
+    Get max entry from array.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN cmp_f - pointer to compare function.
+    @OUT min - pointer to max value.
+
+    RETURN:
+    %-1 if failure.
+    %Index of max entry if success.
+*/
+ssize_t array_max(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, void * __restrict__ max);
+
+
+/*
+    Find first occurrence of key in unsorted array.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN cmp_f - pointer to compare function.
+    @IN key - pointer to searched key.
+    @OUT val - pointer to value if found.
+
+    RETURN:
+    %-1 if failure.
+    %Index of key if success.
+*/
+ssize_t array_unsorted_find_first(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * __restrict__ const key, void * __restrict__ val);
+
+
+/*
+    Find last occurrence of key in unsorted array.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN cmp_f - pointer to compare function.
+    @IN key - pointer to searched key.
+    @OUT val - pointer to value if found.
+
+    RETURN:
+    %-1 if failure.
+    %Index of key if success.
+*/
+ssize_t array_unsorted_find_last(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * __restrict__ const key, void * __restrict__ val);
+
+
+/*
+    Find first occurrence of key in sorted array.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN cmp_f - pointer to compare function.
+    @IN key - pointer to searched key.
+    @OUT val - pointer to value if found.
+
+    RETURN:
+    %-1 if failure.
+    %Index of key if success.
+*/
+ssize_t array_sorted_find_first(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * __restrict__ const key, void * __restrict__ val);
+
+
+/*
+    Find last occurrence of key in sorted array.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN cmp_f - pointer to compare function.
+    @IN key - pointer to searched key.
+    @OUT val - pointer to value if found.
+
+    RETURN:
+    %-1 if failure.
+    %Index of key if success.
+*/
+ssize_t array_sorted_find_last(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * __restrict__ const key, void * __restrict__ val);
 
 
 #endif /* ARRAY_H */
