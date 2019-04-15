@@ -124,7 +124,7 @@ void array_zeros(void *array, const size_t len, const size_t size_of);
 int array_unsorted_insert_first(void * __restrict__ array, const size_t len, const size_t size_of, const void * __restrict__ const data);
 
 
-/*offset_mid
+/*
     Insert data in last pos.
 
     PARAMS:
@@ -155,6 +155,24 @@ int array_unsorted_insert_last(void * __restrict__ array, const size_t len, cons
     %Negative value if failure.
 */
 int array_unsorted_insert_pos(void * __restrict__ array, const size_t len, const size_t size_of, const size_t pos, const void * __restrict__ const data);
+
+
+/*
+    Insert data in sorted array, in correct place. 
+    (Do not use in unsorted array)
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
+    @IN cmp_f - pointer to compare function.
+    @IN data - pointer to data.
+
+    RETURN:
+    %0 if success.
+    %Negative value if failure.
+*/
+int array_sorted_insert(void * __restrict__ array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * __restrict__ const data);
 
 
 /*
@@ -262,14 +280,14 @@ int array_delete_pos_with_entry(void *array, const size_t len, const size_t size
     @IN array - pointer to array.
     @IN len - length of array.
     @IN size_of - size of each member.
-    @IN data - pointer to data.
     @IN cmp_f - pointer to compare function.
+    @IN data - pointer to data.
 
     RETURN:
     %-1 if failure.
     %Index of lower bound if success.
 */
-ssize_t array_lower_bound(const void * const array, const size_t len, const size_t size_of, const void * const data, const compare_f cmp_f);
+ssize_t array_lower_bound(const void * const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * const data);
 
 
 /*
@@ -279,14 +297,30 @@ ssize_t array_lower_bound(const void * const array, const size_t len, const size
     @IN array - pointer to array.
     @IN len - length of array.
     @IN size_of - size of each member.
+    @IN cmp_f - pointer to compare function.
     @IN data - pointer to data.
+
+    RETURN:
+    %-1 if failure.
+    %Index of upper bound if success.
+*/
+ssize_t array_upper_bound(const void * const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * const data);
+
+
+/*
+    Sort array.
+
+    PARAMS:
+    @IN array - pointer to array.
+    @IN len - length of array.
+    @IN size_of - size of each member.
     @IN cmp_f - pointer to compare function.
 
     RETURN:
     %-1 if failure.
     %Index of upper bound if success.
 */
-ssize_t array_upper_bound(const void * const array, const size_t len, const size_t size_of, const void * const data, const compare_f cmp_f);
+int array_sort(void * __restrict__ array, const size_t len, const size_t size_of, const compare_f cmp_f);
 
 
 #endif /* ARRAY_H */

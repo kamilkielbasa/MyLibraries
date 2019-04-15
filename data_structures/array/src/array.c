@@ -248,6 +248,20 @@ int array_unsorted_insert_pos(void * __restrict__ array, const size_t len, const
 }
 
 
+int array_sorted_insert(void * __restrict__ array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * __restrict__ const data)
+{
+    if (len == 1)
+        return __array_insert_pos(array, len, size_of, 0, data);
+
+    ssize_t index = array_upper_bound(array, len - 1, size_of, cmp_f, data);
+
+    if (index == -1)
+        ERROR("array_upper_bound error\n", -1);
+
+    return __array_insert_pos(array, len, size_of, (size_t)index, data);
+}
+
+
 int array_delete_first(void *array, const size_t len, const size_t size_of)
 {
     return __array_delete_pos(array, len, size_of, 0, NULL);
@@ -284,7 +298,7 @@ int array_delete_pos_with_entry(void *array, const size_t len, const size_t size
 }
 
 
-ssize_t array_lower_bound(const void * const array, const size_t len, const size_t size_of, const void * const data, const compare_f cmp_f)
+ssize_t array_lower_bound(const void * const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * const data)
 {
     if (array == NULL)
         ERROR("array == NULL\n", -1);
@@ -295,11 +309,11 @@ ssize_t array_lower_bound(const void * const array, const size_t len, const size
     if (size_of == 0)
         ERROR("size_of == 0\n", -1);
 
-    if (data == NULL)
-        ERROR("data == NULL\n", -1);
-
     if (cmp_f == NULL)
         ERROR("cmp_f == NULL\n", -1);
+
+    if (data == NULL)
+        ERROR("data == NULL\n", -1);
 
     const BYTE * const arr = (const BYTE * const)array;
 
@@ -320,7 +334,7 @@ ssize_t array_lower_bound(const void * const array, const size_t len, const size
 }
 
 
-ssize_t array_upper_bound(const void * const array, const size_t len, const size_t size_of, const void * const data, const compare_f cmp_f)
+ssize_t array_upper_bound(const void * const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * const data)
 {
     if (array == NULL)
         ERROR("array == NULL\n", -1);
@@ -331,11 +345,11 @@ ssize_t array_upper_bound(const void * const array, const size_t len, const size
     if (size_of == 0)
         ERROR("size_of == 0\n", -1);
 
-    if (data == NULL)
-        ERROR("data == NULL\n", -1);
-
     if (cmp_f == NULL)
         ERROR("cmp_f == NULL\n", -1);
+
+    if (data == NULL)
+        ERROR("data == NULL\n", -1);
 
     const BYTE * const arr = (const BYTE * const)array;
 
@@ -353,4 +367,24 @@ ssize_t array_upper_bound(const void * const array, const size_t len, const size
     }
 
     return (ssize_t)(offset_left / size_of); 
+}
+
+
+int array_sort(void * __restrict__ array, const size_t len, const size_t size_of, const compare_f cmp_f)
+{
+    if (array == NULL)      
+        ERROR("array == NULL\n", -1);
+
+    if (len == 0)   
+        ERROR("len == 0\n", -1);
+
+    if (size_of == 0)   
+        ERROR("size_of == 0\n", -1);
+
+    if (cmp_f == NULL)  
+        ERROR("cmp_f == NULL\n", -1);
+
+    qsort(array, len, size_of, cmp_f);
+
+    return 0;
 }
