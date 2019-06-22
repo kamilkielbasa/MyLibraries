@@ -171,6 +171,7 @@ void array_copy(void * __restrict__ dst, const void * __restrict__ const src, co
     (void)memcpy(dst, src, len * size_of);
 }
 
+
 void *array_clone(const void * const array, const size_t len, const size_t size_of)
 {
     /* preconditions */
@@ -388,3 +389,92 @@ int array_sort(void * __restrict__ array, const size_t len, const size_t size_of
 
     return 0;
 }
+
+
+ssize_t array_min(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, void * __restrict__ min)
+{
+    if (array == NULL)
+        ERROR("array == NULL\n", -1);
+
+    if (len == 0)
+        ERROR("len == 0\n", -1);
+
+    if (size_of == 0)
+        ERROR("size_of == 0\n", -1);
+
+    if (cmp_f == NULL)
+        ERROR("cmp_f == NULL\n", -1);
+
+    BYTE *_min = (BYTE *)array_create(1UL, size_of);
+
+    if (_min == NULL)
+        ERROR("malloc error\n", -1);
+
+    BYTE *arr = (BYTE *)array; 
+
+    __ASSIGN__(_min[0], arr[0], size_of);
+
+    const size_t offset_max = size_of * len;
+    size_t pos = 0;
+
+    for (size_t offset = size_of; offset < offset_max; offset += size_of)
+    {
+        if (cmp_f((const void *)&_min[0], (const void *)&arr[offset]) > 0)
+        {
+            __ASSIGN__(_min[0], arr[offset], size_of);
+            pos = offset;
+        }
+    }
+
+    if (min != NULL)
+        __ASSIGN__(*(BYTE *)min, arr[pos], size_of);
+
+    array_destroy((void *)_min);
+
+    return (ssize_t)pos / (ssize_t)size_of;
+}
+
+
+ssize_t array_max(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, void * __restrict__ max)
+{
+    if (array == NULL)
+        ERROR("array == NULL\n", -1);
+
+    if (len == 0)
+        ERROR("len == 0\n", -1);
+
+    if (size_of == 0)
+        ERROR("size_of == 0\n", -1);
+
+    if (cmp_f == NULL)
+        ERROR("cmp_f == NULL\n", -1);
+
+    BYTE *_max = (BYTE *)array_create(1UL, size_of);
+
+    if (_max == NULL)
+        ERROR("malloc error\n", -1);
+
+    BYTE *arr = (BYTE *)array; 
+
+    __ASSIGN__(_max[0], arr[0], size_of);
+
+    const size_t offset_max = size_of * len;
+    size_t pos = 0;
+
+    for (size_t offset = size_of; offset < offset_max; offset += size_of)
+    {
+        if (cmp_f((const void *)&_max[0], (const void *)&arr[offset]) < 0)
+        {
+            __ASSIGN__(_max[0], arr[offset], size_of);
+            pos = offset;
+        }
+    }
+
+    if (max != NULL)
+        __ASSIGN__(*(BYTE *)max, arr[pos], size_of);
+
+    array_destroy((void *)_max);
+
+    return (ssize_t)pos / (ssize_t)size_of;
+}
+

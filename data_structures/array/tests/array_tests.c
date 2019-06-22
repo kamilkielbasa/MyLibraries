@@ -660,6 +660,48 @@ static void test_array_sorted_insert_with_entry(void)
 }
 
 
+static void test_array_min(void)
+{
+    ssize_t index = 0;
+
+    int64_t arr1[] = { -23, -456, 345, 98, 0, -346, 3, 45 };
+    int64_t val1 = 0;
+
+    index = array_min(&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), my_compare_int64_t, &val1);
+
+    T_ASSERT(arr1[index], -456);
+    T_ASSERT(val1, -456);
+
+    double arr2[] = {0.44, 0.67, 0.001, 0.874, 0.0001 };
+    double val2 = 0;
+
+    index = array_min(&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), my_compare_double, &val2);
+    T_ASSERT(arr2[index], 0.0001);
+    T_ASSERT(val2, 0.0001);
+}
+
+
+static void test_array_max(void)
+{
+    ssize_t index = 0;
+
+    int64_t arr1[] = { -23, -456, 345, 98, 0, -346, 3, 45 };
+    int64_t val1 = 0;
+
+    index = array_max(&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), my_compare_int64_t, &val1);
+
+    T_ASSERT(arr1[index], 345);
+    T_ASSERT(val1, 345);
+
+    double arr2[] = {0.44, 0.67, 0.001, 0.874, 0.0001 };
+    double val2 = 0;
+
+    index = array_max(&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), my_compare_double, &val2);
+    T_ASSERT(arr2[index], 0.874);
+    T_ASSERT(val2, 0.874);
+}
+
+
 int main(void)
 {
     TEST_INIT("ARRAY TESTING");
@@ -679,5 +721,7 @@ int main(void)
     TEST(test_array_upper_bound());
     TEST(test_array_sorted_insert());
     TEST(test_array_sorted_insert_with_entry());
+    TEST(test_array_min());
+    TEST(test_array_max());
     TEST_SUMMARY();
 }
