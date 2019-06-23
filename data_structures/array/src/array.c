@@ -478,3 +478,173 @@ ssize_t array_max(const void * __restrict__ const array, const size_t len, const
     return (ssize_t)pos / (ssize_t)size_of;
 }
 
+
+ssize_t array_unsorted_find_first(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * __restrict__ const key, void * __restrict__ val)
+{
+    if (array == NULL)
+        ERROR("array == NULL\n", -1);
+
+    if (len == 0)
+        ERROR("len == 0\n", -1);
+
+    if (size_of == 0)
+        ERROR("size_of == 0\n", -1);
+
+    if (cmp_f == NULL)
+        ERROR("cmp_f == NULL\n", -1);
+
+    if (key == NULL)
+        ERROR("key == NULL\n", -1);
+
+    BYTE *arr = (BYTE *)array;
+
+    const size_t offset_max = len * size_of;
+    ssize_t index = -1;
+
+    for (size_t offset = 0; offset < offset_max; offset += size_of)
+    {
+        if (cmp_f((const void *)(arr + offset), key) == 0)
+        {
+            index = (ssize_t)(offset / size_of);
+            break;
+        }
+    }
+
+    if (index == -1)
+        return -1;
+
+    if (val != NULL)
+        __ASSIGN__(*(BYTE *)val, arr[(size_t)index * size_of], size_of);
+
+    return index;
+}
+
+
+ssize_t array_unsorted_find_last(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * __restrict__ const key, void * __restrict__ val)
+{
+    if (array == NULL)
+        ERROR("array == NULL\n", -1);
+
+    if (len == 0)
+        ERROR("len == 0\n", -1);
+
+    if (size_of == 0)
+        ERROR("size_of == 0\n", -1);
+
+    if (cmp_f == NULL)
+        ERROR("cmp_f == NULL\n", -1);
+
+    if (key == NULL)
+        ERROR("key == NULL\n", -1);
+
+    BYTE *arr = (BYTE *)array;
+
+    const ssize_t offset_max = (const ssize_t)((len - 1) * size_of);
+    ssize_t index = -1;
+
+    for (ssize_t offset = offset_max; offset >= 0; offset -= (ssize_t)size_of)
+    {
+        if (cmp_f((const void *)(arr + offset), key) == 0)
+        {
+            index = offset / (ssize_t)size_of;
+            break;
+        }
+    }
+
+    if (index == -1)
+        return -1;
+
+    if (val != NULL)
+        __ASSIGN__(*(BYTE *)val, arr[(size_t)index * size_of], size_of);
+
+    return index;
+}
+
+
+ssize_t array_sorted_find_first(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * __restrict__ const key, void * __restrict__ val)
+{
+    if (array == NULL)
+        ERROR("array == NULL\n", -1);
+
+    if (len == 0)
+        ERROR("len == 0\n", -1);
+
+    if (size_of == 0)
+        ERROR("size_of == 0\n", -1);
+
+    if (cmp_f == NULL)
+        ERROR("cmp_f == NULL\n", -1);
+
+    if (key == NULL)
+        ERROR("key == NULL\n", -1);
+
+    BYTE* arr = (BYTE *)array;
+
+    size_t left_offset = 0;
+    size_t right_offset = (len - 1) * size_of;
+
+    while (left_offset < right_offset)
+    {
+        size_t middle_offset = ((left_offset / size_of + right_offset / size_of) >> 1) * size_of;
+
+        if (cmp_f((const void *)(arr + middle_offset), key) < 0)
+            left_offset = middle_offset + size_of;
+        else
+            right_offset = middle_offset;
+    }
+
+    if (cmp_f((const void *)(arr + left_offset), key) == 0)
+    {
+        if (val != NULL)
+            __ASSIGN__(*(BYTE *)val, arr[left_offset], size_of);
+
+        return (ssize_t)(left_offset / size_of);
+    }
+
+    return -1;
+}
+
+
+ssize_t array_sorted_find_last(const void * __restrict__ const array, const size_t len, const size_t size_of, const compare_f cmp_f, const void * __restrict__ const key, void * __restrict__ val)
+{
+    if (array == NULL)
+        ERROR("array == NULL\n", -1);
+
+    if (len == 0)
+        ERROR("len == 0\n", -1);
+
+    if (size_of == 0)
+        ERROR("size_of == 0\n", -1);
+
+    if (cmp_f == NULL)
+        ERROR("cmp_f == NULL\n", -1);
+
+    if (key == NULL)
+        ERROR("key == NULL\n", -1);
+
+    BYTE* arr = (BYTE *)array;
+
+    size_t left_offset = 0;
+    size_t right_offset = (len - 1) * size_of;
+
+    while (left_offset < right_offset)
+    {
+        size_t middle_offset = ((left_offset / size_of + right_offset / size_of + 1) >> 1) * size_of;
+
+        if (cmp_f((const void *)(arr + middle_offset), key) > 0)
+            right_offset = middle_offset - size_of;
+        else
+            left_offset = middle_offset;
+    }
+
+    if (cmp_f((const void *)(arr + left_offset), key) == 0)
+    {
+        if (val != NULL)
+            __ASSIGN__(*(BYTE *)val, arr[left_offset], size_of);
+
+        return (ssize_t)(left_offset / size_of);
+    }
+
+    return -1;
+}
+

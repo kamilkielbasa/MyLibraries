@@ -702,6 +702,190 @@ static void test_array_max(void)
 }
 
 
+static void test_array_unsorted_find_first(void)
+{
+    /* unsorted array */
+    int64_t arr1[] = { 2, 3, 0, 4, 0, 6, 5, 2, 2, 3, 8, 8, -1, 9, 9 };
+
+    /* array of keys which will be searched */
+    int64_t keys1[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    /* index of key found in unsorted array */
+    ssize_t pos1[] = { 2, -1, 0, 1, 3, 6, 5, -1, 10, 13 };
+
+    int64_t val_out1 = 0;
+
+    for (size_t i = 0; i < ARRAY_SIZE(keys1); ++i)
+    {
+        T_EXPECT(array_unsorted_find_first(&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), my_compare_int64_t, &keys1[i], &val_out1), pos1[i]);
+
+        if (pos1[i] != -1)
+            T_ASSERT(val_out1, arr1[pos1[i]]);
+
+        T_EXPECT(array_unsorted_find_first(&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), my_compare_int64_t, &keys1[i], NULL), pos1[i]);
+    }
+
+    /* unsorted array */
+    double arr2[] = { 0.05, 0.25, 0.11, 0.01, 0.02, 0.22, 0.001, 3.14, 0.13, 0.17, 2.71828182 };
+
+    /* array of keys which will be searched */
+    double keys2[] = { 0.0, 0.11, 0.22, 3.14, 2.71828182, 0.19 };
+
+    /* index of key found in unsorted array */
+    ssize_t pos2[] = { -1, 2, 5, 7, 10, -1 };
+
+    double val_out2 = 0;
+
+    for (size_t i = 0; i < ARRAY_SIZE(keys2); ++i)
+    {
+        T_EXPECT(array_unsorted_find_first(&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), my_compare_double, &keys2[i], &val_out2), pos2[i]);
+
+        if (pos2[i] != -1)
+            T_ASSERT(val_out2, arr2[pos2[i]]);
+
+        T_EXPECT(array_unsorted_find_first(&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), my_compare_double, &keys2[i], NULL), pos2[i]);
+    }
+}
+
+
+static void test_array_unsorted_find_last(void)
+{
+    /* unsorted array */
+    int64_t arr1[] = { 2, 3, 0, 4, 0, 6, 5, 2, 2, 3, 8, 8, -1, 9, 9 };
+
+    /* array of keys which will be searched */
+    int64_t keys1[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    /* index of key found in unsorted array */
+    ssize_t pos1[] = { 4, -1, 8, 9, 3, 6, 5, -1, 11, 14 };
+
+    int64_t val_out1 = 0;
+
+    for (size_t i = 0; i < ARRAY_SIZE(keys1); ++i)
+    {
+        T_EXPECT(array_unsorted_find_last(&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), my_compare_int64_t, &keys1[i], &val_out1), pos1[i]);
+
+        if (pos1[i] != -1)
+            T_ASSERT(val_out1, arr1[pos1[i]]);
+
+        T_EXPECT(array_unsorted_find_last(&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), my_compare_int64_t, &keys1[i], NULL), pos1[i]);
+    }
+
+    /* unsorted array */
+    double arr2[] = { 0.05, 0.25, 0.11, 0.11, 0.01, 0.022, 0.22, 0.001, 3.14, 3.14, 0.13, 0.17, 0.22, 2.71828182, 2.71828182 };
+
+    /* array of keys which will be searched */
+    double keys2[] = { 0.0, 0.11, 0.22, 3.14, 2.71828182, 0.19};
+
+    /* index of key found in unsorted array */
+    ssize_t pos2[] = { -1, 3, 12, 9 , 14, -1 };
+
+    double val_out2 = 0;
+
+    for (size_t i = 0; i < ARRAY_SIZE(keys2); ++i)
+    {
+        T_EXPECT(array_unsorted_find_last(&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), my_compare_double, &keys2[i], &val_out2), pos2[i]);
+
+        if (pos2[i] != -1)
+            T_ASSERT(val_out2, arr2[pos2[i]]);
+
+        T_EXPECT(array_unsorted_find_last(&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), my_compare_double, &keys2[i], NULL), pos2[i]);
+    }
+}
+
+
+static void test_array_sorted_find_first(void)
+{
+    /* sorted array */
+    int64_t arr1[] = { 0, 0, 0, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 5, 7, 7, 8, 8, 8, 9, 9 };
+
+    /* array of keys which will be searched */
+    int64_t keys1[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    /* index of key found in unsorted array */
+    ssize_t pos1[] = { 0, 3, 5, -1, 9, 13, -1, 14, 16, 19 };
+
+    int64_t val_out1 = 0;
+
+    for (size_t i = 0; i < ARRAY_SIZE(keys1); ++i)
+    {
+        T_EXPECT(array_sorted_find_first(&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), my_compare_int64_t, &keys1[i], &val_out1), pos1[i]);
+
+        if (pos1[i] != -1)
+            T_ASSERT(val_out1, arr1[pos1[i]]);
+
+        T_EXPECT(array_sorted_find_first(&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), my_compare_int64_t, &keys1[i], NULL), pos1[i]);
+    }
+
+    /* sorted array */
+    double arr2[] = { 0.0, 0.0, 0.01, 0.01, 0.01, 0.03, 0.03, 0.04, 0.04, 0.05, 0.05, 0.05, 0.05, 0.06, 0.06 };
+
+    /* array of keys which will be searched */
+    double keys2[] = { 0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09 };
+
+    /* index of key found in unsorted array */
+    ssize_t pos2[] = { 0, 2, -1, 5, 7, 9, 13, -1, -1, -1, -1 };
+
+    double val_out2 = 0;
+
+    for (size_t i = 0; i < ARRAY_SIZE(keys2); ++i)
+    {
+        T_EXPECT(array_sorted_find_first(&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), my_compare_double, &keys2[i], &val_out2), pos2[i]);
+
+        if (pos2[i] != -1)
+            T_ASSERT(val_out2, arr2[pos2[i]]);
+
+        T_EXPECT(array_sorted_find_first(&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), my_compare_double, &keys2[i], NULL), pos2[i]);
+    }
+}
+
+
+static void test_array_sorted_find_last(void)
+{
+    /* sorted array */
+    int64_t arr1[] = { 0, 0, 0, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 5, 7, 7, 8, 8, 8, 9, 9 };
+
+    /* array of keys which will be searched */
+    int64_t keys1[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    /* index of key found in unsorted array */
+    ssize_t pos1[] = { 2, 4, 8, -1, 12, 13, -1, 15, 18, 20 };
+
+    int64_t val_out1 = 0;
+
+    for (size_t i = 0; i < ARRAY_SIZE(keys1); ++i)
+    {
+        T_EXPECT(array_sorted_find_last(&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), my_compare_int64_t, &keys1[i], &val_out1), pos1[i]);
+
+        if (pos1[i] != -1)
+            T_ASSERT(val_out1, arr1[pos1[i]]);
+
+        T_EXPECT(array_sorted_find_last(&arr1[0], ARRAY_SIZE(arr1), sizeof(*arr1), my_compare_int64_t, &keys1[i], NULL), pos1[i]);
+    }
+
+    /* sorted array */
+    double arr2[] = { 0.0, 0.0, 0.01, 0.01, 0.01, 0.03, 0.03, 0.04, 0.04, 0.05, 0.05, 0.05, 0.05, 0.06, 0.06 };
+
+    /* array of keys which will be searched */
+    double keys2[] = { 0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09 };
+
+    /* index of key found in unsorted array */
+    ssize_t pos2[] = { 1, 4, -1, 6, 8, 12, 14, -1, -1, -1 };
+
+    double val_out2 = 0;
+
+    for (size_t i = 0; i < ARRAY_SIZE(keys2); ++i)
+    {
+        T_EXPECT(array_sorted_find_last(&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), my_compare_double, &keys2[i], &val_out2), pos2[i]);
+
+        if (pos2[i] != -1)
+            T_ASSERT(val_out2, arr2[pos2[i]]);
+
+        T_EXPECT(array_sorted_find_last(&arr2[0], ARRAY_SIZE(arr2), sizeof(*arr2), my_compare_double, &keys2[i], NULL), pos2[i]);
+    }
+}
+
+
 int main(void)
 {
     TEST_INIT("ARRAY TESTING");
@@ -723,5 +907,9 @@ int main(void)
     TEST(test_array_sorted_insert_with_entry());
     TEST(test_array_min());
     TEST(test_array_max());
+    TEST(test_array_unsorted_find_first());
+    TEST(test_array_unsorted_find_last());
+    TEST(test_array_sorted_find_first());
+    TEST(test_array_sorted_find_last());
     TEST_SUMMARY();
 }
