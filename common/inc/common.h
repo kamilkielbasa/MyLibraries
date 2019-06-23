@@ -69,7 +69,7 @@ typedef void (*data_print_f)(void *);
 /* Printing error message with ending current process */
 #define ERROR(msg, val) \
     do { \
-        (void)printf("%s.\t\t FILE=%s LINE=%d\n", msg, __FILENAME__, __LINE__); \
+        (void)fprintf(stderr, "%s.\t\t FILE=%s LINE=%d\n", msg, __FILENAME__, __LINE__); \
         return val; \
     } while (0) \
 
@@ -77,7 +77,7 @@ typedef void (*data_print_f)(void *);
 /* Printing error message with ending current process */
 #define VERROR(msg) \
     do { \
-        (void)printf("%s.\t\t FILE=%s LINE=%d\n", msg, __FILENAME__, __LINE__); \
+        (void)fprintf(stderr, "%s.\t\t FILE=%s LINE=%d\n", msg, __FILENAME__, __LINE__); \
         return; \
     } while (0) \
 

@@ -3,7 +3,7 @@
 
 
 /*
-    Doubly linked list implementation
+    Linked list implementation
 
     Author: Kamil Kiełbasa
     email: kamilkielbasa73@gmail.com
@@ -17,27 +17,8 @@
 #include <common.h> /* compare_f */
 
 
-typedef struct List_node
-{
-    struct List_node *next;     /* pointer to next node */
-    size_t size_of;             /* size of node */
-    
-    BYTE data[];                /* placeholder for data */
-} List_node;
-
-
-typedef struct List
-{
-    List_node *head;            /* pointer to head */
-    List_node *tail;            /* pointer to tail */
-
-    size_t length;              /* num of nodes in list */
-    size_t size_of;             /* size of element */
-
-    compare_f cmp_f;            /* compare function */
-    destructor_f destroy_f;     /* destructor function */
-    data_print_f print_f;       /* print function */
-} List;
+typedef struct List List;
+typedef struct List_node List_node;
 
 
 /*
@@ -53,7 +34,7 @@ typedef struct List
     %NULL if failure.
     %Pointer to list if success.
 */
-List *list_create(const size_t size_of, const compare_f cmp_f, const destructor_f destroy_f, const data_print_f print_f);
+List *list_create(const size_t size_of, const compare_f cmp_f, const destructor_f destroy_f);
 
 
 /*
