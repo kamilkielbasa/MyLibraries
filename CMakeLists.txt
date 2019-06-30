@@ -11,4 +11,4 @@ add_compile_options("-std=gnu99" "-g" "-O3" "-Werror" "-Wall" "-Wextra" "-pedant
 project(MyLibraries)
 add_subdirectory(common)
 add_subdirectory(ctest)
-add_subdirectory(data_structures)
+add_subdirectory(containers)
