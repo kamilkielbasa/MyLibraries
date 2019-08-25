@@ -1,6 +1,7 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
+
 /*
     Common macros implementation
 
@@ -91,7 +92,7 @@ typedef void (*data_print_f)(void *);
 
 
 /* Get the array size if declared on stack */
-#define ARRAY_SIZE(array) sizeof(array) / sizeof(array[0])
+#define ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
 
 
 /* Assign dst and src if type is the same */

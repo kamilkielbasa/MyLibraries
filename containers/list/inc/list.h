@@ -34,105 +34,105 @@ typedef struct List_node List_node;
     %NULL if failure.
     %Pointer to list if success.
 */
-List *list_create(const size_t size_of, const compare_f cmp_f, const destructor_f destroy_f);
+List* list_create(size_t size_of, compare_f cmp_f, destructor_f destroy_f);
 
 
 /*
     Destroy list.
 
     PARAMS:
-    @IN list - pointer to list.
+    @IN list_p - pointer to list.
 
     RETURN:
     %This is void function.
 */
-void list_destroy(List *list);
+void list_destroy(List* list_p);
 
 
 /*
     Destroy list with all entires. (call destructor for each entires)
 
     PARAMS:
-    @IN list - pointer to list.
+    @IN list_p - pointer to list.
 
     RETURN:
     %This is void function.
 */
-void list_destroy_with_entries(List *list);
+void list_destroy_with_entries(List* list_p);
 
 
 /*
     Insert element to sorted list.
 
     PARAMS:
-    @IN list - pointer to list.
-    @IN entry - pointer to entry.
+    @IN list_p - pointer to list.
+    @IN entry_p - pointer to entry.
 
     RETURN:
     %0 if success.
     %negative value if failure.
 */
-int list_insert(List * __restrict__ list, const void * __restrict__ const entry);
+int list_insert(List* __restrict__ list_p, const void* __restrict__ entry_p);
 
 
 /*
-    Delete the first entry which compare(list->entry, entry) == 0.
+    Delete the first entry which compare(list_p->entry_p, entry_p) == 0.
 
     PARAMS:
-    @IN list - pointer to list.
-    @IN entry - pointer to entry.
+    @IN list_p - pointer to list.
+    @IN entry_p - pointer to entry.
 
     RETURN:
     %0 if success.
     %negative value if failure.
 */
-int list_delete(List * __restrict__ list, const void * __restrict__ const entry);
+int list_delete(List* __restrict__ list_p, const void* __restrict__ entry_p);
 
 
 /*
-    Delete the first entry which compare(list->entry, entry) == 0. (call destructor)
+    Delete the first entry which compare(list_p->entry_p, entry_p) == 0. (call destructor)
 
     PARAMS:
-    @IN list - pointer to list.
-    @IN entry - pointer to entry.
+    @IN list_p - pointer to list.
+    @IN entry_p - pointer to entry.
 
     RETURN:
     %0 if success.
     %negative value if failure.
 */
-int list_delete_with_entry(List * __restrict__ list, const void * __restrict__ const entry);
+int list_delete_with_entry(List* __restrict__ list_p, const void* __restrict__ entry_p);
 
 
 /*
-    Delete the all entries which compare(list->entry, entry) == 0.
+    Delete the all entries which compare(list_p->entry_p, entry_p) == 0.
 
     PARAMS:
-    @IN list - pointer to list.
-    @IN entry - pointer to entry.
+    @IN list_p - pointer to list.
+    @IN entry_p - pointer to entry.
 
     RETURN:
-    %0 if success.
-    %negative value if failure.
+    %number of deleted (>0) if success.
+    %-1 if failure.
 */
-int list_delete_all(List * __restrict__ const list, const void * __restrict__ const entry);
+int list_delete_all(List* __restrict__ list_p, const void* __restrict__ entry_p);
 
 
 /*
-    Delete the all entries which compare(list->entry, entry) == 0. (call destructor)
+    Delete the all entries which compare(list_p->entry_p, entry_p) == 0. (call destructor)
 
     PARAMS:
-    @IN list - pointer to list.
-    @IN entry - pointer to entry.
+    @IN list_p - pointer to list.
+    @IN entry_p - pointer to entry.
 
     RETURN:
-    %0 if success.
-    %negative value if failure.
+    %number of deleted (>0) if success.
+    %-1 if failure.
 */
-int list_delete_all_with_entry(List * __restrict__ const list, const void * __restrict__ const entry);
+int list_delete_all_with_entry(List* __restrict__ list_p, const void* __restrict__ entry_p);
 
 
 /*
-    Search for entry which compare(list->entry, val) == 0.
+    Search for entry which compare(list_p->entry_p, val) == 0.
 
     If you have your own struct, you have to use `fake struct` with correct key.
 
@@ -150,59 +150,59 @@ int list_delete_all_with_entry(List * __restrict__ const list, const void * __re
     struct Entry out_entry = {0};
 
     and search.
-    list_search(list, (const void * const)&val, (void *)&entry);
+    list_search(list_p, (const void * const)&val, (void *)&entry_p);
 
     PARAMS:
-    @IN list - pointer to list.
-    @IN val - pointer to search value.
-    @OUT entry - pointer to entry with found val if val was searched and entry != NULL.
+    @IN list_p - pointer to list.
+    @IN entry_p - pointer to search value.
+    @OUT val_out_p - pointer to entry with found val if val was searched and val_out_p != NULL.
 
     RETURN:
     %0 if success.
     %negative value if failure.
 */
-int list_search(const List * __restrict__ const list, const void * const val, void *entry);
+int list_search(const List* __restrict__ list_p, const void* entry_p, void* val_out_p);
 
 
 /*
-    Create array from list.
+    Create array from list_p.
 
     PARAMS:
-    @IN list - pointer to list.
+    @IN list_p - pointer to list.
     @OUT array - pointer to array.
-    @OUT size - pointer to returned size of array.
+    @OUT size_p - pointer to returned size of array.
 
     RETURN:
     %0 if success.
     %negative value if failure.
 */
-int list_to_array(const List * __restrict__ const list, void * __restrict__ array, size_t * __restrict__ size);
+int list_to_array(const List* __restrict__ list_p, void* __restrict__ array, size_t* __restrict__ size_p);
 
 
 /*
     Get number of entries in list.
 
     PARAMS:
-    @IN list - pointer to list.
+    @IN list_p - pointer to list.
 
     RETURN:
     %-1 if failure
     %number of entries.
 */
-ssize_t list_get_num_entries(const List * const list);
+ssize_t list_get_num_entries(const List* list_p);
 
 
 /*
     Get size of data list.
 
     PARAMS:
-    @IN list - pointer to list.
+    @IN list_p - pointer to list.
 
     RETURN:
     %-1 if failure
     %number of entries.
 */
-ssize_t list_get_data_size(const List * const list);
+ssize_t list_get_data_size(const List* list_p);
 
 
 #endif /* LIST_H */
